@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Push Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            color: #333;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .code-block code {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #333;
+            white-space: pre;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .setup-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #ddd;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .credentials {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ffc107;
+            margin-bottom: 20px;
+        }
+
+        .credentials strong {
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 Web Push Dashboard</h1>
+            <p>Manage your push notification service</p>
+        </div>
+
+        <div id="setupSection" class="card">
+            <h2>Get Started</h2>
+            <p>First, create your account to get an API key:</p>
+            <button onclick="createAccount()">Create Account & Get API Key</button>
+            
+            <div id="credentials" class="credentials hidden">
+                <strong>Your API Key:</strong>
+                <div class="code-block">
+                    <code id="apiKeyDisplay"></code>
+                </div>
+                <p style="margin-top: 10px;"><strong>Save this API key! You'll need it to authenticate.</strong></p>
+            </div>
+        </div>
+
+        <div id="mainDashboard" class="hidden">
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>Total Subscribers</h3>
+                    <div class="value" id="subscriberCount">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>API Key Status</h3>
+                    <div class="value" style="font-size: 18px; color: #28a745;">✓ Active</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Send Push Notification</h2>
+                <div id="alertContainer"></div>
+                
+                <form onsubmit="sendNotification(event)">
+                    <div class="form-group">
+                        <label for="notifTitle">Title *</label>
+                        <input type="text" id="notifTitle" required placeholder="e.g., New Update Available!">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notifBody">Message *</label>
+                        <textarea id="notifBody" required placeholder="e.g., Check out our latest features..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notifIcon">Icon URL</label>
+                        <input type="url" id="notifIcon" placeholder="https://example.com/icon.png">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notifUrl">Click URL</label>
+                        <input type="url" id="notifUrl" placeholder="https://example.com/page">
+                    </div>
+
+                    <button type="submit">Send Notification</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Integration Code</h2>
+                <p>Add this code to your website to start collecting subscribers:</p>
+                
+                <h3 style="margin-top: 20px; margin-bottom: 10px;">1. Add the SDK to your HTML:</h3>
+                <div class="code-block">
+                    <code id="sdkCode"></code>
+                </div>
+
+                <h3 style="margin-top: 20px; margin-bottom: 10px;">2. Download and place sw.js in your website root:</h3>
+                <div class="code-block">
+                    <code>Download sw.js and place it at: https://yourwebsite.com/sw.js</code>
+                </div>
+
+                <h3 style="margin-top: 20px; margin-bottom: 10px;">3. Initialize and subscribe users:</h3>
+                <div class="code-block">
+                    <code id="initCode"></code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://web-production-0538b.up.railway.app';
+        let currentApiKey = localStorage.getItem('apiKey');
+
+        // Check if user already has API key
+        if (currentApiKey) {
+            document.getElementById('setupSection').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('hidden');
+            loadDashboard();
+        }
+
+        async function createAccount() {
+            try {
+                const response = await fetch(`${API_URL}/api/users/register`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentApiKey = data.apiKey;
+                    localStorage.setItem('apiKey', currentApiKey);
+                    localStorage.setItem('userId', data.userId);
+                    localStorage.setItem('vapidPublicKey', data.vapidPublicKey);
+
+                    document.getElementById('apiKeyDisplay').textContent = currentApiKey;
+                    document.getElementById('credentials').classList.remove('hidden');
+
+                    setTimeout(() => {
+                        document.getElementById('setupSection').classList.add('hidden');
+                        document.getElementById('mainDashboard').classList.remove('hidden');
+                        loadDashboard();
+                    }, 3000);
+                }
+            } catch (error) {
+                alert('Failed to create account: ' + error.message);
+            }
+        }
+
+        async function loadDashboard() {
+            try {
+                // Load subscriber count
+                const response = await fetch(`${API_URL}/api/subscriptions`, {
+                    headers: {
+                        'X-API-Key': currentApiKey
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('subscriberCount').textContent = data.count || 0;
+
+                // Generate integration code
+                generateIntegrationCode();
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+            }
+        }
+
+        function generateIntegrationCode() {
+            const sdkCode = `<!-- Add to your HTML head -->
+<script src="http://localhost:3000/web-push-sdk.js"><\/script>`;
+
+            const initCode = `<script>
+// Initialize SDK
+const pushSDK = new WebPushSDK({
+    apiKey: '${currentApiKey}',
+    serverUrl: '${API_URL}'
+});
+
+// Initialize on page load
+pushSDK.init().then(() => {
+    console.log('Push SDK ready!');
+});
+
+// Subscribe user (call this when user clicks subscribe button)
+async function subscribeUser() {
+    try {
+        const result = await pushSDK.subscribe();
+        console.log('Subscribed!', result);
+        alert('Successfully subscribed to notifications!');
+    } catch (error) {
+        console.error('Subscription failed:', error);
+        alert('Failed to subscribe: ' + error.message);
+    }
+}
+<\/script>`;
+
+            document.getElementById('sdkCode').textContent = sdkCode;
+            document.getElementById('initCode').textContent = initCode;
+        }
+
+        async function sendNotification(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('notifTitle').value;
+            const body = document.getElementById('notifBody').value;
+            const icon = document.getElementById('notifIcon').value;
+            const url = document.getElementById('notifUrl').value;
+
+            try {
+                const response = await fetch(`${API_URL}/api/notifications/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': currentApiKey
+                    },
+                    body: JSON.stringify({ title, body, icon, url })
+                });
+
+                const data = await response.json();
+
+                showAlert('success', `Notification sent to ${data.sent} subscribers!`);
+                
+                // Clear form
+                document.getElementById('notifTitle').value = '';
+                document.getElementById('notifBody').value = '';
+                document.getElementById('notifIcon').value = '';
+                document.getElementById('notifUrl').value = '';
+
+                // Reload stats
+                loadDashboard();
+            } catch (error) {
+                showAlert('error', 'Failed to send notification: ' + error.message);
+            }
+        }
+
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            
+            alertContainer.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+            
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

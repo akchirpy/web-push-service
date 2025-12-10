@@ -8,7 +8,7 @@ function App() {
   const isAuthenticated = useStore(state => state.isAuthenticated);
 
   return (
-    <Router basename="/web-push-service/dashboard-react">
+    <Router basename="/web-push-service">
       <Routes>
         <Route 
           path="/login" 

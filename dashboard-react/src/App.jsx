@@ -8,7 +8,7 @@ function App() {
   const isAuthenticated = useStore(state => state.isAuthenticated);
 
   return (
-    <Router basename="/chirpyweb-dashboard">
+    <Router basename="/web-push-service/dashboard-react">
       <Routes>
         <Route 
           path="/login" 

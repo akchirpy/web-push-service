@@ -1,0 +1,134 @@
+name: Deploy React Dashboard
+
+   on:
+     push:
+       branches: [ main ]
+       paths:
+         - 'dashboard-react/**'
+     workflow_dispatch:
+
+   permissions:
+     contents: read
+     pages: write
+     id-token: write
+
+   jobs:
+     build:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v4
+
+         - name: Setup Node
+           uses: actions/setup-node@v4
+           with:
+             node-version: '18'
+
+         - name: Install dependencies
+           working-directory: ./dashboard-react
+           run: npm ci
+
+         - name: Build
+           working-directory: ./dashboard-react
+           run: npm run build
+
+         - name: Upload artifact
+           uses: actions/upload-pages-artifact@v3
+           with:
+             path: ./dashboard-react/dist
+
+     deploy:
+       environment:
+         name: github-pages
+         url: ${{ steps.deployment.outputs.page_url }}
+       runs-on: ubuntu-latest
+       needs: build
+       steps:
+         - name: Deploy to GitHub Pages
+           id: deployment
+           uses: actions/deploy-pages@v4
+```
+
+8. **Access your React dashboard at:**
+```
+   https://akchirpy.github.io/web-push-service/dashboard-react/
+```
+
+**Your old HTML dashboard stays at:**
+```
+https://akchirpy.github.io/web-push-service/
+```
+
+---
+
+## **Option 2: Create Separate Repository (Clean Separation)**
+
+Keep React dashboard in its own repo.
+
+### **Two Separate Repos:**
+```
+Repository 1: web-push-service
+├── backend/
+├── dashboard-v2/              ← HTML dashboard
+├── sw.js
+└── web-push-sdk.js
+URL: https://akchirpy.github.io/web-push-service/
+
+Repository 2: chirpyweb-dashboard  ← NEW
+├── src/
+├── package.json
+└── vite.config.js
+URL: https://akchirpy.github.io/chirpyweb-dashboard/
+```
+
+**Pros:**
+- Clean separation
+- Independent deployments
+- Easier to manage
+
+**Cons:**
+- Two repos to maintain
+- Two URLs to remember
+
+---
+
+## **My Recommendation: Option 1 (Same Repo)**
+
+**Why?**
+- ✅ Everything in one place
+- ✅ Same backend, two frontend options
+- ✅ Easy to compare HTML vs React
+- ✅ One repo to manage
+- ✅ Users can choose which dashboard to use
+
+### **Final Structure:**
+```
+https://github.com/akchirpy/web-push-service/
+├── backend/                           ← Backend API
+├── dashboard-v2/                     ← HTML Dashboard (old)
+├── dashboard-react/                  ← React Dashboard (new) ⭐
+├── wordpress-plugin/
+├── sw.js
+└── web-push-sdk.js
+
+URLs:
+- HTML Dashboard:  https://akchirpy.github.io/web-push-service/
+- React Dashboard: https://akchirpy.github.io/web-push-service/dashboard-react/
+- Backend:         https://web-production-0538b.up.railway.app
+```
+
+---
+
+## **Quick Steps for Option 1:**
+
+1. **Go to:** `https://github.com/akchirpy/web-push-service`
+
+2. **Click "Add file" → "Create new file"**
+
+3. **Type:** `dashboard-react/README.md`
+   - This creates the folder
+
+4. **Add some text:**
+```
+   # React Dashboard
+   Modern React dashboard for ChirpyWeb

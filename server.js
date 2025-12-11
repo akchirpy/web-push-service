@@ -68,6 +68,41 @@ app.post('/api/users/register', (req, res) => {
   });
 });
 
+// Retrieve Master API Key by email
+app.post('/api/users/retrieve-key', (req, res) => {
+  const { email } = req.body;
+
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({ 
+      success: false,
+      error: 'Valid email required' 
+    });
+  }
+
+  const user = Array.from(users.values()).find(u => u.email.toLowerCase() === email.toLowerCase());
+  
+  if (!user) {
+    return res.status(404).json({ 
+      success: false,
+      error: 'No account found with this email address' 
+    });
+  }
+
+  // In production, you would:
+  // 1. Generate a temporary reset token
+  // 2. Send it via email
+  // 3. User clicks link to view their key
+  // For now, we'll return it directly (NOT RECOMMENDED FOR PRODUCTION)
+  
+  res.json({
+    success: true,
+    email: user.email,
+    masterApiKey: user.masterApiKey,
+    message: 'Master API Key retrieved successfully',
+    warning: 'In production, this would be sent to your email address'
+  });
+});
+
 app.get('/api/users/info', (req, res) => {
   const apiKey = req.headers['x-api-key'];
   

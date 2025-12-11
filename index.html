@@ -602,9 +602,9 @@
         <div class="container">
             <div class="card">
                 <div class="auth-tabs">
-                    <button class="auth-tab active" onclick="showAuthTab('login')">🔑 Login</button>
-                    <button class="auth-tab" onclick="showAuthTab('signup')">🚀 Create Account</button>
-                    <button class="auth-tab" onclick="showAuthTab('forgot')">🔓 Forgot Key?</button>
+                    <button class="auth-tab active" onclick="showAuthTab('login', event)">🔑 Login</button>
+                    <button class="auth-tab" onclick="showAuthTab('signup', event)">🚀 Create Account</button>
+                    <button class="auth-tab" onclick="showAuthTab('forgot', event)">🔓 Forgot Key?</button>
                 </div>
 
                 <div id="authAlert"></div>
@@ -666,7 +666,7 @@
                                 <p style="margin-top: 1rem; font-size: 0.875rem;">⚠️ Save this key securely!</p>
                             </div>
                         </div>
-                        <button onclick="showAuthTab('login')" class="btn btn-secondary">
+                        <button onclick="showAuthTab('login', event)" class="btn btn-secondary">
                             Back to Login →
                         </button>
                     </div>
@@ -1209,10 +1209,19 @@
         }
 
         // Auth Tab Switching
-        function showAuthTab(tabName) {
+        function showAuthTab(tabName, event) {
             // Update tab buttons
             document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            } else {
+                // Fallback: find the tab by onclick content
+                document.querySelectorAll('.auth-tab').forEach(tab => {
+                    if (tab.onclick && tab.onclick.toString().includes(`'${tabName}'`)) {
+                        tab.classList.add('active');
+                    }
+                });
+            }
             
             // Update tab content
             document.querySelectorAll('.auth-tab-content').forEach(content => content.classList.add('hidden'));

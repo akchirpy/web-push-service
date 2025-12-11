@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChirpyWeb Dashboard - Enhanced</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --chirpy-primary: #FF6B35;
+            --chirpy-secondary: #F7931E;
+            --bg-main: #f7f9fc;
+            --bg-card: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--chirpy-primary), var(--chirpy-secondary));
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 40px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--chirpy-primary), var(--chirpy-secondary));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--chirpy-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--chirpy-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 0.5rem;
+        }
+
+        .date-range {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: end;
+        }
+
+        .date-range input {
+            padding: 0.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-main);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .breakdown-bar {
+            height: 8px;
+            background: var(--chirpy-primary);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        #loginScreen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--chirpy-primary), var(--chirpy-secondary));
+        }
+
+        .login-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], input[type="date"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--chirpy-primary);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <img src="https://chirpyweb.com/wp-content/uploads/2022/09/Chirpy-Web-Logo-Full.svg" class="logo" style="margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1.5rem;">Dashboard Login</h2>
+            <div>
+                <label>Master API Key</label>
+                <input type="password" id="apiKeyInput" placeholder="Enter your Master API Key">
+            </div>
+            <button class="btn btn-primary" onclick="login()" style="width: 100%; margin-top: 1rem;">Login</button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden">
+        <div class="header">
+            <div class="header-content">
+                <img src="https://chirpyweb.com/wp-content/uploads/2022/09/Chirpy-Web-Logo-Full.svg" class="logo">
+                <div class="user-info">
+                    <span id="userEmail"></span>
+                    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Stats Overview -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Subscribers</div>
+                    <div class="stat-value" id="totalSubscribers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">This Week</div>
+                    <div class="stat-value" id="weekSubscribers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Websites</div>
+                    <div class="stat-value" id="totalWebsites">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Campaigns Sent</div>
+                    <div class="stat-value" id="totalCampaigns">0</div>
+                </div>
+            </div>
+
+            <!-- Subscriber Growth Chart -->
+            <div class="card">
+                <div class="card-title">Subscriber Growth</div>
+                <div class="date-range">
+                    <div>
+                        <label>Start Date</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div>
+                        <label>End Date</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    <button class="btn btn-primary" onclick="loadGrowthData()">Update</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Subscriber Analytics -->
+            <div class="card">
+                <div class="card-title">Subscriber Analytics</div>
+                <div class="breakdown-grid">
+                    <!-- Platform Breakdown -->
+                    <div>
+                        <h3 style="margin-bottom: 1rem;">By Platform</h3>
+                        <div id="platformBreakdown"></div>
+                    </div>
+                    <!-- Browser Breakdown -->
+                    <div>
+                        <h3 style="margin-bottom: 1rem;">By Browser</h3>
+                        <div id="browserBreakdown"></div>
+                    </div>
+                    <!-- Country Breakdown -->
+                    <div>
+                        <h3 style="margin-bottom: 1rem;">Top Countries</h3>
+                        <div id="countryBreakdown"></div>
+                    </div>
+                    <!-- Website Stats -->
+                    <div>
+                        <h3 style="margin-bottom: 1rem;">By Website</h3>
+                        <div id="websiteBreakdown"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://web-production-0538b.up.railway.app';
+        let masterApiKey = localStorage.getItem('masterApiKey');
+        let growthChart = null;
+
+        // Initialize
+        if (masterApiKey) {
+            showDashboard();
+        }
+
+        function login() {
+            const apiKey = document.getElementById('apiKeyInput').value;
+            if (!apiKey) {
+                alert('Please enter your API key');
+                return;
+            }
+
+            fetch(`${API_URL}/api/users/info`, {
+                headers: { 'X-API-Key': apiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    masterApiKey = apiKey;
+                    localStorage.setItem('masterApiKey', apiKey);
+                    localStorage.setItem('userEmail', data.email);
+                    showDashboard();
+                } else {
+                    alert('Invalid API key');
+                }
+            })
+            .catch(err => alert('Login failed: ' + err.message));
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
+            
+            // Set default date range (last 7 days)
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 6);
+            
+            document.getElementById('startDate').valueAsDate = startDate;
+            document.getElementById('endDate').valueAsDate = endDate;
+            
+            loadAllData();
+        }
+
+        function loadAllData() {
+            loadGrowthData();
+            loadSubscriberAnalytics();
+            loadBasicStats();
+        }
+
+        function loadBasicStats() {
+            // Load websites
+            fetch(`${API_URL}/api/websites`, {
+                headers: { 'X-API-Key': masterApiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const totalSubs = data.websites.reduce((sum, w) => sum + w.subscriberCount, 0);
+                    document.getElementById('totalSubscribers').textContent = totalSubs;
+                    document.getElementById('totalWebsites').textContent = data.websites.length;
+                }
+            });
+
+            // Load campaigns
+            fetch(`${API_URL}/api/campaigns/all/list`, {
+                headers: { 'X-API-Key': masterApiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const sentCampaigns = data.campaigns.filter(c => c.status === 'sent').length;
+                    document.getElementById('totalCampaigns').textContent = sentCampaigns;
+                }
+            });
+        }
+
+        function loadGrowthData() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            fetch(`${API_URL}/api/analytics/subscriber-growth?startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'X-API-Key': masterApiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('weekSubscribers').textContent = data.totalInRange;
+                    renderGrowthChart(data.growth);
+                }
+            })
+            .catch(err => console.error('Growth data error:', err));
+        }
+
+        function renderGrowthChart(growthData) {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            
+            if (growthChart) {
+                growthChart.destroy();
+            }
+
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: growthData.map(d => d.displayDate),
+                    datasets: [{
+                        label: 'New Subscribers',
+                        data: growthData.map(d => d.subscribers),
+                        borderColor: '#FF6B35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    return `${growthData[index].day}, ${growthData[index].displayDate}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadSubscriberAnalytics() {
+            fetch(`${API_URL}/api/analytics/subscribers`, {
+                headers: { 'X-API-Key': masterApiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    renderBreakdown('platformBreakdown', data.subscribers.platformBreakdown);
+                    renderBreakdown('browserBreakdown', data.subscribers.browserBreakdown);
+                    renderBreakdown('countryBreakdown', data.subscribers.countryBreakdown);
+                    renderWebsiteStats(data.subscribers.websiteStats);
+                }
+            })
+            .catch(err => console.error('Subscriber analytics error:', err));
+        }
+
+        function renderBreakdown(elementId, data) {
+            const container = document.getElementById(elementId);
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="empty-state">No data available</div>';
+                return;
+            }
+
+            const maxCount = Math.max(...data.map(d => d.count));
+            container.innerHTML = data.map(item => `
+                <div class="breakdown-item">
+                    <div>
+                        <strong>${item.name}</strong>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                            ${item.count} subscribers (${item.percentage}%)
+                        </div>
+                        <div class="breakdown-bar" style="width: ${(item.count / maxCount) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderWebsiteStats(websites) {
+            const container = document.getElementById('websiteBreakdown');
+            if (!websites || websites.length === 0) {
+                container.innerHTML = '<div class="empty-state">No websites</div>';
+                return;
+            }
+
+            const maxCount = Math.max(...websites.map(w => w.totalSubscribers));
+            container.innerHTML = websites.map(website => `
+                <div class="breakdown-item">
+                    <div>
+                        <strong>${website.domain}</strong>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                            ${website.totalSubscribers} subscribers 
+                            ${website.recentGrowth > 0 ? `(+${website.recentGrowth} this week)` : ''}
+                        </div>
+                        <div class="breakdown-bar" style="width: ${(website.totalSubscribers / maxCount) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

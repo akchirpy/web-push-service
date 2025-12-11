@@ -477,7 +477,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         /* Auth Tabs */
@@ -602,9 +602,9 @@
         <div class="container">
             <div class="card">
                 <div class="auth-tabs">
-                    <button class="auth-tab active" onclick="showAuthTab('login', event)">🔑 Login</button>
-                    <button class="auth-tab" onclick="showAuthTab('signup', event)">🚀 Create Account</button>
-                    <button class="auth-tab" onclick="showAuthTab('forgot', event)">🔓 Forgot Key?</button>
+                    <button class="auth-tab active" id="loginTabBtn" onclick="showAuthTab('login')">🔑 Login</button>
+                    <button class="auth-tab" id="signupTabBtn" onclick="showAuthTab('signup')">🚀 Create Account</button>
+                    <button class="auth-tab" id="forgotTabBtn" onclick="showAuthTab('forgot')">🔓 Forgot Key?</button>
                 </div>
 
                 <div id="authAlert"></div>
@@ -666,7 +666,7 @@
                                 <p style="margin-top: 1rem; font-size: 0.875rem;">⚠️ Save this key securely!</p>
                             </div>
                         </div>
-                        <button onclick="showAuthTab('login', event)" class="btn btn-secondary">
+                        <button onclick="showAuthTab('login')" class="btn btn-secondary">
                             Back to Login →
                         </button>
                     </div>
@@ -1209,23 +1209,32 @@
         }
 
         // Auth Tab Switching
-        function showAuthTab(tabName, event) {
-            // Update tab buttons
-            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-            if (event && event.target) {
-                event.target.classList.add('active');
-            } else {
-                // Fallback: find the tab by onclick content
-                document.querySelectorAll('.auth-tab').forEach(tab => {
-                    if (tab.onclick && tab.onclick.toString().includes(`'${tabName}'`)) {
-                        tab.classList.add('active');
-                    }
-                });
+        function showAuthTab(tabName) {
+            console.log('Switching to tab:', tabName); // Debug log
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            const tabBtn = document.getElementById(tabName + 'TabBtn');
+            if (tabBtn) {
+                tabBtn.classList.add('active');
             }
             
-            // Update tab content
-            document.querySelectorAll('.auth-tab-content').forEach(content => content.classList.add('hidden'));
-            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            // Hide all tab contents
+            document.querySelectorAll('.auth-tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Show selected tab content
+            const tabContent = document.getElementById(tabName + 'Tab');
+            if (tabContent) {
+                tabContent.classList.remove('hidden');
+            } else {
+                console.error('Tab content not found:', tabName + 'Tab');
+            }
         }
 
         // Retrieve API Key

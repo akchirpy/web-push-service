@@ -1324,7 +1324,11 @@ pushSDK.init();
                 // Populate test subscriber dropdown
                 testSelect.innerHTML = '<option value="">Select a test subscriber...</option>';
                 allSubscribers.forEach((sub, index) => {
-                    const label = `${sub.website} - ${sub.metadata.browser} on ${sub.metadata.platform} (${new Date(sub.subscribedAt).toLocaleDateString()})`;
+                    // Safe access with fallbacks
+                    const browser = sub.metadata?.browser || 'Unknown';
+                    const platform = sub.metadata?.platform || 'Unknown';
+                    const subDate = sub.subscribedAt || sub.metadata?.subscribedAt || new Date();
+                    const label = `${sub.website} - ${browser} on ${platform} (${new Date(subDate).toLocaleDateString()})`;
                     testSelect.innerHTML += `<option value="${index}">${label}</option>`;
                 });
 
@@ -1356,12 +1360,20 @@ pushSDK.init();
                 return;
             }
 
-            tbody.innerHTML = subscribers.map((sub, index) => `
+            tbody.innerHTML = subscribers.map((sub, index) => {
+                // Safe access with fallbacks
+                const subscribedAt = sub.subscribedAt || sub.metadata?.subscribedAt || new Date();
+                const platform = sub.metadata?.platform || 'Unknown';
+                const browser = sub.metadata?.browser || 'Unknown';
+                const city = sub.metadata?.city || 'Unknown';
+                const country = sub.metadata?.country || 'Unknown';
+                
+                return `
                 <tr>
                     <td>
-                        <div style="font-weight: 600;">${new Date(sub.subscribedAt).toLocaleDateString()}</div>
+                        <div style="font-weight: 600;">${new Date(subscribedAt).toLocaleDateString()}</div>
                         <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                            ${new Date(sub.subscribedAt).toLocaleTimeString()}
+                            ${new Date(subscribedAt).toLocaleTimeString()}
                         </div>
                     </td>
                     <td>
@@ -1369,20 +1381,20 @@ pushSDK.init();
                     </td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 4px;">
-                            ${getPlatformIcon(sub.metadata.platform)}
-                            ${sub.metadata.platform}
+                            ${getPlatformIcon(platform)}
+                            ${platform}
                         </div>
                     </td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 4px;">
-                            ${getBrowserIcon(sub.metadata.browser)}
-                            ${sub.metadata.browser}
+                            ${getBrowserIcon(browser)}
+                            ${browser}
                         </div>
                     </td>
                     <td>
-                        <div>${sub.metadata.city || 'Unknown'}</div>
+                        <div>${city}</div>
                         <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                            ${sub.metadata.country || 'Unknown'}
+                            ${country}
                         </div>
                     </td>
                     <td>
@@ -1391,7 +1403,7 @@ pushSDK.init();
                         </button>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         function getPlatformIcon(platform) {
@@ -1466,8 +1478,10 @@ pushSDK.init();
                 const data = await response.json();
                 
                 if (data.success) {
+                    const browser = subscriber.metadata?.browser || 'Unknown browser';
+                    const platform = subscriber.metadata?.platform || 'Unknown platform';
                     showAlert('campaignAlert', 'success', 
-                        `✅ Test notification sent to ${subscriber.metadata.browser} on ${subscriber.metadata.platform}!`);
+                        `✅ Test notification sent to ${browser} on ${platform}!`);
                 } else {
                     showAlert('campaignAlert', 'error', 'Failed to send test notification');
                 }
@@ -1564,4 +1578,3 @@ pushSDK.init();
     </script>
 </body>
 </html>
-

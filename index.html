@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChirpyWeb Dashboard - Enhanced</title>
+    <title>ChirpyWeb Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
@@ -60,11 +60,17 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.2s;
+            font-size: 1rem;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--chirpy-primary), var(--chirpy-secondary));
             color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
         }
 
         .btn-secondary {
@@ -75,9 +81,15 @@
         .btn-link {
             background: none;
             color: var(--chirpy-primary);
-            text-decoration: underline;
+            text-decoration: none;
             padding: 0;
             font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
         }
 
         .container {
@@ -183,7 +195,7 @@
             color: var(--text-secondary);
         }
 
-        #loginScreen, #forgotPasswordScreen, #signupScreen {
+        .auth-screen {
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -215,7 +227,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .alert {
@@ -236,12 +248,6 @@
             border: 1px solid #cfc;
         }
 
-        .alert-warning {
-            background: #fff4e6;
-            color: #f7931E;
-            border: 1px solid #ffe0b2;
-        }
-
         .divider {
             margin: 1.5rem 0;
             padding-top: 1.5rem;
@@ -257,12 +263,13 @@
             word-break: break-all;
             margin: 1rem 0;
             border: 2px solid var(--chirpy-primary);
+            font-size: 0.875rem;
         }
     </style>
 </head>
 <body>
     <!-- Login Screen -->
-    <div id="loginScreen">
+    <div id="loginScreen" class="auth-screen">
         <div class="login-card">
             <img src="https://chirpyweb.com/wp-content/uploads/2022/09/Chirpy-Web-Logo-Full.svg" class="logo" style="margin-bottom: 2rem; width: 100%;">
             <h2 style="margin-bottom: 1.5rem;">Dashboard Login</h2>
@@ -281,7 +288,7 @@
     </div>
 
     <!-- Forgot Password Screen -->
-    <div id="forgotPasswordScreen" class="hidden">
+    <div id="forgotPasswordScreen" class="auth-screen hidden">
         <div class="login-card">
             <img src="https://chirpyweb.com/wp-content/uploads/2022/09/Chirpy-Web-Logo-Full.svg" class="logo" style="margin-bottom: 2rem; width: 100%;">
             <h2 style="margin-bottom: 1.5rem;">Retrieve Your API Key</h2>
@@ -298,7 +305,7 @@
     </div>
 
     <!-- Signup Screen -->
-    <div id="signupScreen" class="hidden">
+    <div id="signupScreen" class="auth-screen hidden">
         <div class="login-card">
             <img src="https://chirpyweb.com/wp-content/uploads/2022/09/Chirpy-Web-Logo-Full.svg" class="logo" style="margin-bottom: 2rem; width: 100%;">
             <h2 style="margin-bottom: 1.5rem;">Create Account</h2>
@@ -370,22 +377,18 @@
             <div class="card">
                 <div class="card-title">Subscriber Analytics</div>
                 <div class="breakdown-grid">
-                    <!-- Platform Breakdown -->
                     <div>
                         <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Platform</h3>
                         <div id="platformBreakdown"></div>
                     </div>
-                    <!-- Browser Breakdown -->
                     <div>
                         <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Browser</h3>
                         <div id="browserBreakdown"></div>
                     </div>
-                    <!-- Country Breakdown -->
                     <div>
                         <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Top Countries</h3>
                         <div id="countryBreakdown"></div>
                     </div>
-                    <!-- Website Stats -->
                     <div>
                         <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Website</h3>
                         <div id="websiteBreakdown"></div>
@@ -400,33 +403,46 @@
         let masterApiKey = localStorage.getItem('masterApiKey');
         let growthChart = null;
 
-        // Initialize
-        if (masterApiKey) {
-            showDashboard();
-        }
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded');
+            if (masterApiKey) {
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        });
 
         function showAlert(elementId, type, message) {
             const alertDiv = document.getElementById(elementId);
-            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
-            setTimeout(() => alertDiv.innerHTML = '', 8000);
+            if (alertDiv) {
+                alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+                setTimeout(() => alertDiv.innerHTML = '', 8000);
+            }
         }
 
         function showLogin() {
+            console.log('Showing login screen');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('forgotPasswordScreen').classList.add('hidden');
             document.getElementById('signupScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
         }
 
         function showForgotPassword() {
+            console.log('Showing forgot password screen');
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('forgotPasswordScreen').classList.remove('hidden');
             document.getElementById('signupScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
         }
 
         function showSignup() {
+            console.log('Showing signup screen');
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('forgotPasswordScreen').classList.add('hidden');
             document.getElementById('signupScreen').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
         }
 
         function login() {
@@ -471,10 +487,10 @@
                     showAlert('forgotAlert', 'success', 
                         `<strong>Your Master API Key:</strong>
                         <div class="key-display">${data.masterApiKey}</div>
-                        <p style="margin-top: 1rem; font-size: 0.875rem;">⚠️ Save this key securely! ${data.warning || ''}</p>`
+                        <p style="margin-top: 1rem; font-size: 0.875rem;">⚠️ Save this key securely!</p>`
                     );
                 } else {
-                    showAlert('forgotAlert', 'error', data.error);
+                    showAlert('forgotAlert', 'error', data.error || 'Failed to retrieve key');
                 }
             })
             .catch(err => showAlert('forgotAlert', 'error', 'Failed to retrieve key: ' + err.message));
@@ -495,23 +511,25 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
+                    const apiKey = data.masterApiKey;
                     showAlert('signupAlert', 'success', 
                         `<strong>Account Created! 🎉</strong>
-                        <div class="key-display">${data.masterApiKey}</div>
-                        <p style="margin-top: 1rem; font-size: 0.875rem;">⚠️ <strong>IMPORTANT:</strong> Save this Master API Key somewhere safe! You'll need it to login.</p>
-                        <button class="btn btn-primary" onclick="useNewKey('${data.masterApiKey}')" style="width: 100%; margin-top: 1rem;">Continue to Dashboard →</button>`
+                        <div class="key-display">${apiKey}</div>
+                        <p style="margin-top: 1rem; font-size: 0.875rem;">⚠️ <strong>IMPORTANT:</strong> Save this Master API Key somewhere safe!</p>`
                     );
+                    
+                    // Auto-login after 3 seconds
+                    setTimeout(() => {
+                        masterApiKey = apiKey;
+                        localStorage.setItem('masterApiKey', apiKey);
+                        localStorage.setItem('userEmail', email);
+                        showDashboard();
+                    }, 3000);
                 } else {
-                    showAlert('signupAlert', 'error', data.error);
+                    showAlert('signupAlert', 'error', data.error || 'Failed to create account');
                 }
             })
             .catch(err => showAlert('signupAlert', 'error', 'Signup failed: ' + err.message));
-        }
-
-        function useNewKey(apiKey) {
-            document.getElementById('apiKeyInput').value = apiKey;
-            showLogin();
-            login();
         }
 
         function logout() {
@@ -522,13 +540,13 @@
         }
 
         function showDashboard() {
+            console.log('Showing dashboard');
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('forgotPasswordScreen').classList.add('hidden');
             document.getElementById('signupScreen').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
             
-            // Set default date range (last 7 days)
             const endDate = new Date();
             const startDate = new Date();
             startDate.setDate(startDate.getDate() - 6);
@@ -546,7 +564,6 @@
         }
 
         function loadBasicStats() {
-            // Load websites
             fetch(`${API_URL}/api/websites`, {
                 headers: { 'X-API-Key': masterApiKey }
             })
@@ -560,7 +577,6 @@
             })
             .catch(err => console.error('Websites error:', err));
 
-            // Load campaigns
             fetch(`${API_URL}/api/campaigns/all/list`, {
                 headers: { 'X-API-Key': masterApiKey }
             })
@@ -617,9 +633,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             callbacks: {
                                 title: function(context) {
@@ -632,9 +646,7 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
+                            ticks: { stepSize: 1 }
                         }
                     }
                 }
@@ -699,19 +711,6 @@
                 </div>
             `).join('');
         }
-
-        // Handle enter key on inputs
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('apiKeyInput')?.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') login();
-            });
-            document.getElementById('forgotEmail')?.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') retrieveApiKey();
-            });
-            document.getElementById('signupEmail')?.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') createAccount();
-            });
-        });
     </script>
 </body>
 </html>

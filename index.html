@@ -502,6 +502,196 @@
                 overflow-x: auto;
             }
         }
+
+        /* Subscribers Tab Enhancements */
+        .filter-select {
+            padding: 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            background: white;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-select:hover {
+            border-color: var(--chirpy-primary);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--chirpy-primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .subscriber-count-badge {
+            background: linear-gradient(135deg, var(--chirpy-primary), var(--chirpy-secondary));
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        .subscribers-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .subscribers-table thead th {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 13px;
+            border-bottom: 3px solid var(--chirpy-primary);
+            white-space: nowrap;
+        }
+
+        .subscribers-table tbody td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .subscribers-table tbody tr {
+            transition: all 0.2s;
+        }
+
+        .subscribers-table tbody tr:hover {
+            background: #fff8f6;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
+        }
+
+        .subscriber-date {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .subscriber-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .subscriber-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .subscriber-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .subscriber-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .subscriber-location-city {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .subscriber-location-country {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .test-btn {
+            background: linear-gradient(135deg, var(--chirpy-primary), var(--chirpy-secondary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        }
+
+        .test-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Analytics Tab Styles */
+        .date-range {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .date-range input[type="date"] {
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .date-range input[type="date"]:focus {
+            outline: none;
+            border-color: var(--chirpy-primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .breakdown-item {
+            padding: 0.75rem;
+            background: var(--bg-main);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .breakdown-item:hover {
+            background: #fff8f6;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
+        }
+
+        .breakdown-bar {
+            height: 8px;
+            background: linear-gradient(90deg, var(--chirpy-primary), var(--chirpy-secondary));
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .breakdown-item:hover .breakdown-bar {
+            height: 10px;
+        }
     </style>
 </head>
 <body>
@@ -690,35 +880,37 @@
                     <div class="card-header">
                         <h2 class="card-title">👥 All Subscribers</h2>
                         <div style="display: flex; gap: 12px; align-items: center;">
-                            <select id="subscriberWebsiteFilter" onchange="loadSubscribers()" style="padding: 8px 16px;">
+                            <select id="subscriberWebsiteFilter" onchange="loadSubscribers()" class="filter-select">
                                 <option value="">All Websites</option>
                             </select>
-                            <span id="subscriberCount" style="font-weight: 600; color: var(--text-secondary);"></span>
+                            <div class="subscriber-count-badge" id="subscriberCount"></div>
                         </div>
                     </div>
 
                     <div id="subscriberAlert"></div>
                     
-                    <table id="subscribersTable">
-                        <thead>
-                            <tr>
-                                <th>Subscribed</th>
-                                <th>Website</th>
-                                <th>Platform</th>
-                                <th>Browser</th>
-                                <th>Location</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="subscribersTableBody">
-                            <tr>
-                                <td colspan="6" style="text-align: center; padding: 40px;">
-                                    <div class="loading"></div>
-                                    <p style="margin-top: 12px;">Loading subscribers...</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-container">
+                        <table id="subscribersTable" class="subscribers-table">
+                            <thead>
+                                <tr>
+                                    <th>📅 Subscribed</th>
+                                    <th>🌐 Website</th>
+                                    <th>💻 Platform</th>
+                                    <th>🔍 Browser</th>
+                                    <th>📍 Location</th>
+                                    <th style="text-align: center;">⚡ Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subscribersTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px;">
+                                        <div class="loading"></div>
+                                        <p style="margin-top: 12px;">Loading subscribers...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -862,7 +1054,7 @@
                             <span class="stat-label">Total Sent</span>
                             <span class="stat-icon">📤</span>
                         </div>
-                        <div class="stat-value">0</div>
+                        <div class="stat-value" id="totalSent">0</div>
                         <div class="stat-change">All time</div>
                     </div>
                     <div class="stat-card">
@@ -870,36 +1062,85 @@
                             <span class="stat-label">Delivered</span>
                             <span class="stat-icon">✓</span>
                         </div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-change positive">100% delivery rate</div>
+                        <div class="stat-value" id="totalDelivered">0</div>
+                        <div class="stat-change positive"><span id="deliveryRate">100</span>% delivery rate</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
                             <span class="stat-label">Clicks</span>
                             <span class="stat-icon">👆</span>
                         </div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-change">0% CTR</div>
+                        <div class="stat-value" id="totalClicked">0</div>
+                        <div class="stat-change"><span id="ctrRate">0</span>% CTR</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
-                            <span class="stat-label">Avg. CTR</span>
-                            <span class="stat-icon">📊</span>
+                            <span class="stat-label">New This Week</span>
+                            <span class="stat-icon">👥</span>
                         </div>
-                        <div class="stat-value">0%</div>
-                        <div class="stat-change">Industry avg: 3.2%</div>
+                        <div class="stat-value" id="weekSubscribers">0</div>
+                        <div class="stat-change positive">Subscribers</div>
                     </div>
                 </div>
 
+                <!-- Subscriber Growth Chart -->
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">📈 Subscriber Growth</h2>
                     </div>
+                    <div class="date-range">
+                        <div>
+                            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Start Date</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div>
+                            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">End Date</label>
+                            <input type="date" id="endDate">
+                        </div>
+                        <button class="btn btn-primary" onclick="loadGrowthData()">Update Chart</button>
+                    </div>
                     <div class="chart-container">
-                        <div class="empty-state">
-                            <div class="empty-icon">📊</div>
-                            <h3>Growth Chart</h3>
-                            <p>Subscriber growth will be displayed here</p>
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Subscriber Analytics -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">👥 Subscriber Demographics</h2>
+                    </div>
+                    <div class="breakdown-grid">
+                        <div>
+                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Platform</h3>
+                            <div id="platformBreakdown">
+                                <div class="empty-state">
+                                    <p>No subscriber data yet</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Browser</h3>
+                            <div id="browserBreakdown">
+                                <div class="empty-state">
+                                    <p>No subscriber data yet</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Top Countries</h3>
+                            <div id="countryBreakdown">
+                                <div class="empty-state">
+                                    <p>No subscriber data yet</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Website</h3>
+                            <div id="websiteBreakdown">
+                                <div class="empty-state">
+                                    <p>No websites yet</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -938,6 +1179,7 @@
         function loadAnalytics() {
             const masterApiKey = localStorage.getItem('masterApiKey');
             
+            // Load campaign analytics
             fetch(`${API_URL}/api/analytics/overview`, {
                 headers: { 'X-API-Key': masterApiKey }
             })
@@ -945,24 +1187,161 @@
             .then(data => {
                 if (data.success) {
                     const stats = data.analytics;
-                    
-                    // Update analytics stats
-                    document.querySelector('#analyticsTab .stat-value:nth-of-type(1)').textContent = stats.totalSent;
-                    document.querySelector('#analyticsTab .stat-value:nth-of-type(2)').textContent = stats.totalDelivered;
-                    document.querySelector('#analyticsTab .stat-value:nth-of-type(3)').textContent = stats.totalClicked;
-                    document.querySelector('#analyticsTab .stat-value:nth-of-type(4)').textContent = stats.avgCTR + '%';
-                    
-                    // Update stat changes
-                    const statChanges = document.querySelectorAll('#analyticsTab .stat-change');
-                    statChanges[0].textContent = 'All time';
-                    statChanges[1].textContent = stats.deliveryRate + '% delivery rate';
-                    statChanges[2].textContent = stats.avgCTR + '% CTR';
-                    statChanges[3].textContent = 'Industry avg: 3.2%';
+                    document.getElementById('totalSent').textContent = stats.totalSent;
+                    document.getElementById('totalDelivered').textContent = stats.totalDelivered;
+                    document.getElementById('totalClicked').textContent = stats.totalClicked;
+                    document.getElementById('deliveryRate').textContent = stats.deliveryRate;
+                    document.getElementById('ctrRate').textContent = stats.avgCTR;
                 }
             })
             .catch(error => {
-                console.error('Error loading analytics:', error);
+                console.error('Analytics error:', error);
             });
+
+            // Set default date range (last 30 days for better visibility)
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 29); // Last 30 days
+            
+            document.getElementById('startDate').valueAsDate = startDate;
+            document.getElementById('endDate').valueAsDate = endDate;
+
+            // Load subscriber growth and analytics
+            loadGrowthData();
+            loadSubscriberAnalytics();
+        }
+
+        // Load growth chart data
+        let growthChart = null;
+        function loadGrowthData() {
+            const masterApiKey = localStorage.getItem('masterApiKey');
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            fetch(`${API_URL}/api/analytics/subscriber-growth?startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'X-API-Key': masterApiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('weekSubscribers').textContent = data.totalInRange;
+                    renderGrowthChart(data.growth);
+                }
+            })
+            .catch(err => console.error('Growth data error:', err));
+        }
+
+        function renderGrowthChart(growthData) {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            
+            if (growthChart) {
+                growthChart.destroy();
+            }
+
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: growthData.map(d => d.displayDate),
+                    datasets: [{
+                        label: 'New Subscribers',
+                        data: growthData.map(d => d.subscribers),
+                        borderColor: '#FF6B35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#FF6B35',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    return `${growthData[index].day}, ${growthData[index].displayDate}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                stepSize: 1,
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadSubscriberAnalytics() {
+            const masterApiKey = localStorage.getItem('masterApiKey');
+            
+            fetch(`${API_URL}/api/analytics/subscribers`, {
+                headers: { 'X-API-Key': masterApiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    renderBreakdown('platformBreakdown', data.subscribers.platformBreakdown);
+                    renderBreakdown('browserBreakdown', data.subscribers.browserBreakdown);
+                    renderBreakdown('countryBreakdown', data.subscribers.countryBreakdown);
+                    renderWebsiteStats(data.subscribers.websiteStats);
+                }
+            })
+            .catch(err => console.error('Subscriber analytics error:', err));
+        }
+
+        function renderBreakdown(elementId, data) {
+            const container = document.getElementById(elementId);
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No data available</p></div>';
+                return;
+            }
+
+            const maxCount = Math.max(...data.map(d => d.count));
+            container.innerHTML = data.map(item => `
+                <div class="breakdown-item">
+                    <div>
+                        <strong>${item.name}</strong>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            ${item.count} subscribers (${item.percentage}%)
+                        </div>
+                        <div class="breakdown-bar" style="width: ${(item.count / maxCount) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderWebsiteStats(websites) {
+            const container = document.getElementById('websiteBreakdown');
+            if (!websites || websites.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No websites yet</p></div>';
+                return;
+            }
+
+            const maxCount = Math.max(...websites.map(w => w.totalSubscribers));
+            container.innerHTML = websites.map(website => `
+                <div class="breakdown-item">
+                    <div>
+                        <strong>${website.domain}</strong>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            ${website.totalSubscribers} subscribers 
+                            ${website.recentGrowth > 0 ? `(+${website.recentGrowth} this week)` : ''}
+                        </div>
+                        <div class="breakdown-bar" style="width: ${(website.totalSubscribers / maxCount) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         // Check if logged in
@@ -1371,34 +1750,30 @@ pushSDK.init();
                 return `
                 <tr>
                     <td>
-                        <div style="font-weight: 600;">${new Date(subscribedAt).toLocaleDateString()}</div>
-                        <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                            ${new Date(subscribedAt).toLocaleTimeString()}
-                        </div>
+                        <div class="subscriber-date">${new Date(subscribedAt).toLocaleDateString()}</div>
+                        <div class="subscriber-time">${new Date(subscribedAt).toLocaleTimeString()}</div>
                     </td>
                     <td>
                         <span class="badge badge-info">${sub.website}</span>
                     </td>
                     <td>
-                        <div style="display: flex; align-items: center; gap: 4px;">
-                            ${getPlatformIcon(platform)}
-                            ${platform}
+                        <div class="subscriber-info">
+                            <span class="subscriber-icon">${getPlatformIcon(platform)}</span>
+                            <span class="subscriber-label">${platform}</span>
                         </div>
                     </td>
                     <td>
-                        <div style="display: flex; align-items: center; gap: 4px;">
-                            ${getBrowserIcon(browser)}
-                            ${browser}
+                        <div class="subscriber-info">
+                            <span class="subscriber-icon">${getBrowserIcon(browser)}</span>
+                            <span class="subscriber-label">${browser}</span>
                         </div>
                     </td>
                     <td>
-                        <div>${city}</div>
-                        <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                            ${country}
-                        </div>
+                        <div class="subscriber-location-city">${city}</div>
+                        <div class="subscriber-location-country">${country}</div>
                     </td>
-                    <td>
-                        <button class="btn btn-secondary btn-small" onclick="sendTestToSubscriber(${index})">
+                    <td style="text-align: center;">
+                        <button class="test-btn" onclick="sendTestToSubscriber(${index})">
                             📤 Send Test
                         </button>
                     </td>

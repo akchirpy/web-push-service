@@ -692,6 +692,33 @@
         .breakdown-item:hover .breakdown-bar {
             height: 10px;
         }
+
+        /* CTA Buttons Styling */
+        .cta-buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .cta-button-group {
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .cta-button-group:hover {
+            border-color: var(--chirpy-primary);
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
+        }
+
+        small {
+            display: block;
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -950,12 +977,68 @@
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="campaignIcon">Icon URL</label>
+                                    <label for="campaignIcon">Icon URL (Small)</label>
                                     <input type="url" id="campaignIcon" placeholder="https://example.com/icon.png">
+                                    <small style="color: var(--text-secondary);">64x64px recommended</small>
                                 </div>
                                 <div class="form-group">
-                                    <label for="campaignUrl">Click URL</label>
-                                    <input type="url" id="campaignUrl" placeholder="https://example.com/sale">
+                                    <label for="campaignImage">📸 Large Image URL (Optional)</label>
+                                    <input type="url" id="campaignImage" placeholder="https://example.com/banner.jpg">
+                                    <small style="color: var(--text-secondary);">360x180px or 2:1 ratio recommended</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="campaignUrl">Default Click URL</label>
+                                <input type="url" id="campaignUrl" placeholder="https://example.com/sale">
+                                <small style="color: var(--text-secondary);">URL when notification body is clicked</small>
+                            </div>
+
+                            <!-- CTA Buttons Section -->
+                            <div class="card" style="background: var(--bg-main); padding: 20px; margin: 20px 0;">
+                                <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                    🎯 Call-to-Action Buttons (Optional)
+                                    <span style="font-size: 12px; font-weight: normal; color: var(--text-secondary);">
+                                        Add up to 2 action buttons
+                                    </span>
+                                </h3>
+                                
+                                <div class="cta-buttons-container">
+                                    <!-- CTA Button 1 -->
+                                    <div class="cta-button-group">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="ctaButton1Text">Button 1 Text</label>
+                                                <input type="text" id="ctaButton1Text" placeholder="Shop Now" maxlength="30">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="ctaButton1Url">Button 1 URL</label>
+                                                <input type="url" id="ctaButton1Url" placeholder="https://example.com/shop">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- CTA Button 2 -->
+                                    <div class="cta-button-group">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="ctaButton2Text">Button 2 Text</label>
+                                                <input type="text" id="ctaButton2Text" placeholder="View Details" maxlength="30">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="ctaButton2Url">Button 2 URL</label>
+                                                <input type="url" id="ctaButton2Url" placeholder="https://example.com/details">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info" style="margin-top: 12px;">
+                                    <span>💡</span>
+                                    <div style="font-size: 13px;">
+                                        <strong>Pro Tip:</strong> CTA buttons make notifications more engaging! 
+                                        Use action words like "Shop Now", "Learn More", "Get Started", "View Offer"
+                                    </div>
                                 </div>
                             </div>
 
@@ -1576,8 +1659,32 @@ pushSDK.init();
             const title = document.getElementById('campaignTitle').value;
             const body = document.getElementById('campaignBody').value;
             const icon = document.getElementById('campaignIcon').value;
+            const image = document.getElementById('campaignImage').value;
             const url = document.getElementById('campaignUrl').value;
             const segmentId = document.getElementById('campaignSegment').value || null;
+
+            // Get CTA button data
+            const ctaButton1Text = document.getElementById('ctaButton1Text').value.trim();
+            const ctaButton1Url = document.getElementById('ctaButton1Url').value.trim();
+            const ctaButton2Text = document.getElementById('ctaButton2Text').value.trim();
+            const ctaButton2Url = document.getElementById('ctaButton2Url').value.trim();
+
+            // Build actions array for CTA buttons
+            const actions = [];
+            if (ctaButton1Text && ctaButton1Url) {
+                actions.push({
+                    action: 'button1',
+                    title: ctaButton1Text,
+                    url: ctaButton1Url
+                });
+            }
+            if (ctaButton2Text && ctaButton2Url) {
+                actions.push({
+                    action: 'button2',
+                    title: ctaButton2Text,
+                    url: ctaButton2Url
+                });
+            }
 
             const submitBtn = event.target.querySelector('button[type="submit"]');
             const originalHTML = submitBtn.innerHTML;
@@ -1600,7 +1707,9 @@ pushSDK.init();
                         title,
                         body,
                         icon,
+                        image,
                         url,
+                        actions,
                         segmentId
                     })
                 });
@@ -1827,11 +1936,35 @@ pushSDK.init();
             const title = document.getElementById('campaignTitle').value || 'Test Notification';
             const body = document.getElementById('campaignBody').value || 'This is a test notification';
             const icon = document.getElementById('campaignIcon').value || '';
+            const image = document.getElementById('campaignImage').value || '';
             const url = document.getElementById('campaignUrl').value || '/';
 
             if (!title || !body) {
                 alert('Please fill in the notification title and message first');
                 return;
+            }
+
+            // Get CTA button data
+            const ctaButton1Text = document.getElementById('ctaButton1Text').value.trim();
+            const ctaButton1Url = document.getElementById('ctaButton1Url').value.trim();
+            const ctaButton2Text = document.getElementById('ctaButton2Text').value.trim();
+            const ctaButton2Url = document.getElementById('ctaButton2Url').value.trim();
+
+            // Build actions array
+            const actions = [];
+            if (ctaButton1Text && ctaButton1Url) {
+                actions.push({
+                    action: 'button1',
+                    title: ctaButton1Text,
+                    url: ctaButton1Url
+                });
+            }
+            if (ctaButton2Text && ctaButton2Url) {
+                actions.push({
+                    action: 'button2',
+                    title: ctaButton2Text,
+                    url: ctaButton2Url
+                });
             }
 
             try {
@@ -1845,7 +1978,9 @@ pushSDK.init();
                         title,
                         body,
                         icon,
+                        image,
                         url,
+                        actions,
                         subscriptionIds: [subscriber.id]
                     })
                 });
@@ -1855,8 +1990,9 @@ pushSDK.init();
                 if (data.success) {
                     const browser = subscriber.metadata?.browser || 'Unknown browser';
                     const platform = subscriber.metadata?.platform || 'Unknown platform';
+                    const ctaInfo = actions.length > 0 ? ` with ${actions.length} CTA button(s)` : '';
                     showAlert('campaignAlert', 'success', 
-                        `✅ Test notification sent to ${browser} on ${platform}!`);
+                        `✅ Test notification sent to ${browser} on ${platform}${ctaInfo}!`);
                 } else {
                     showAlert('campaignAlert', 'error', 'Failed to send test notification');
                 }

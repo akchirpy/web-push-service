@@ -72,6 +72,14 @@
             color: var(--chirpy-primary);
         }
 
+        .btn-link {
+            background: none;
+            color: var(--chirpy-primary);
+            text-decoration: underline;
+            padding: 0;
+            font-size: 0.875rem;
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -175,7 +183,7 @@
             color: var(--text-secondary);
         }
 
-        #loginScreen {
+        #loginScreen, #forgotPasswordScreen, #signupScreen {
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -227,6 +235,29 @@
             color: #3c3;
             border: 1px solid #cfc;
         }
+
+        .alert-warning {
+            background: #fff4e6;
+            color: #f7931E;
+            border: 1px solid #ffe0b2;
+        }
+
+        .divider {
+            margin: 1.5rem 0;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .key-display {
+            background: #f7f9fc;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 1rem 0;
+            border: 2px solid var(--chirpy-primary);
+        }
     </style>
 </head>
 <body>
@@ -241,10 +272,44 @@
                 <input type="password" id="apiKeyInput" placeholder="Enter your Master API Key">
             </div>
             <button class="btn btn-primary" onclick="login()" style="width: 100%; margin-top: 1rem;">Login</button>
-            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                <p style="color: var(--text-secondary); font-size: 0.875rem; text-align: center;">
-                    Don't have an account? Contact support.
-                </p>
+            <div class="divider">
+                <button class="btn btn-link" onclick="showForgotPassword()">Forgot your API key?</button>
+                <span style="color: var(--text-secondary); margin: 0 0.5rem;">•</span>
+                <button class="btn btn-link" onclick="showSignup()">Create account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Screen -->
+    <div id="forgotPasswordScreen" class="hidden">
+        <div class="login-card">
+            <img src="https://chirpyweb.com/wp-content/uploads/2022/09/Chirpy-Web-Logo-Full.svg" class="logo" style="margin-bottom: 2rem; width: 100%;">
+            <h2 style="margin-bottom: 1.5rem;">Retrieve Your API Key</h2>
+            <div id="forgotAlert"></div>
+            <div>
+                <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Email Address</label>
+                <input type="email" id="forgotEmail" placeholder="Enter your registered email">
+            </div>
+            <button class="btn btn-primary" onclick="retrieveApiKey()" style="width: 100%; margin-top: 1rem;">Retrieve API Key</button>
+            <div class="divider">
+                <button class="btn btn-link" onclick="showLogin()">Back to login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Screen -->
+    <div id="signupScreen" class="hidden">
+        <div class="login-card">
+            <img src="https://chirpyweb.com/wp-content/uploads/2022/09/Chirpy-Web-Logo-Full.svg" class="logo" style="margin-bottom: 2rem; width: 100%;">
+            <h2 style="margin-bottom: 1.5rem;">Create Account</h2>
+            <div id="signupAlert"></div>
+            <div>
+                <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Email Address</label>
+                <input type="email" id="signupEmail" placeholder="your@email.com">
+            </div>
+            <button class="btn btn-primary" onclick="createAccount()" style="width: 100%; margin-top: 1rem;">Create Account</button>
+            <div class="divider">
+                <button class="btn btn-link" onclick="showLogin()">Already have an account?</button>
             </div>
         </div>
     </div>
@@ -343,7 +408,25 @@
         function showAlert(elementId, type, message) {
             const alertDiv = document.getElementById(elementId);
             alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
-            setTimeout(() => alertDiv.innerHTML = '', 5000);
+            setTimeout(() => alertDiv.innerHTML = '', 8000);
+        }
+
+        function showLogin() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('forgotPasswordScreen').classList.add('hidden');
+            document.getElementById('signupScreen').classList.add('hidden');
+        }
+
+        function showForgotPassword() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('forgotPasswordScreen').classList.remove('hidden');
+            document.getElementById('signupScreen').classList.add('hidden');
+        }
+
+        function showSignup() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('forgotPasswordScreen').classList.add('hidden');
+            document.getElementById('signupScreen').classList.remove('hidden');
         }
 
         function login() {
@@ -370,6 +453,67 @@
             .catch(err => showAlert('loginAlert', 'error', 'Login failed: ' + err.message));
         }
 
+        function retrieveApiKey() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            if (!email) {
+                showAlert('forgotAlert', 'error', 'Please enter your email address');
+                return;
+            }
+
+            fetch(`${API_URL}/api/users/retrieve-key`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('forgotAlert', 'success', 
+                        `<strong>Your Master API Key:</strong>
+                        <div class="key-display">${data.masterApiKey}</div>
+                        <p style="margin-top: 1rem; font-size: 0.875rem;">⚠️ Save this key securely! ${data.warning || ''}</p>`
+                    );
+                } else {
+                    showAlert('forgotAlert', 'error', data.error);
+                }
+            })
+            .catch(err => showAlert('forgotAlert', 'error', 'Failed to retrieve key: ' + err.message));
+        }
+
+        function createAccount() {
+            const email = document.getElementById('signupEmail').value.trim();
+            if (!email) {
+                showAlert('signupAlert', 'error', 'Please enter your email address');
+                return;
+            }
+
+            fetch(`${API_URL}/api/users/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('signupAlert', 'success', 
+                        `<strong>Account Created! 🎉</strong>
+                        <div class="key-display">${data.masterApiKey}</div>
+                        <p style="margin-top: 1rem; font-size: 0.875rem;">⚠️ <strong>IMPORTANT:</strong> Save this Master API Key somewhere safe! You'll need it to login.</p>
+                        <button class="btn btn-primary" onclick="useNewKey('${data.masterApiKey}')" style="width: 100%; margin-top: 1rem;">Continue to Dashboard →</button>`
+                    );
+                } else {
+                    showAlert('signupAlert', 'error', data.error);
+                }
+            })
+            .catch(err => showAlert('signupAlert', 'error', 'Signup failed: ' + err.message));
+        }
+
+        function useNewKey(apiKey) {
+            document.getElementById('apiKeyInput').value = apiKey;
+            showLogin();
+            login();
+        }
+
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.clear();
@@ -379,6 +523,8 @@
 
         function showDashboard() {
             document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('forgotPasswordScreen').classList.add('hidden');
+            document.getElementById('signupScreen').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
             
@@ -554,16 +700,17 @@
             `).join('');
         }
 
-        // Handle enter key on login
+        // Handle enter key on inputs
         document.addEventListener('DOMContentLoaded', function() {
-            const apiKeyInput = document.getElementById('apiKeyInput');
-            if (apiKeyInput) {
-                apiKeyInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        login();
-                    }
-                });
-            }
+            document.getElementById('apiKeyInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            document.getElementById('forgotEmail')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') retrieveApiKey();
+            });
+            document.getElementById('signupEmail')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') createAccount();
+            });
         });
     </script>
 </body>

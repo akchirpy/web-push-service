@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChirpyWeb - Push Notifications Dashboard</title>
     <link rel="icon" href="https://chirpyweb.com/wp-content/uploads/2022/09/cropped-chirpy-web-favicon-32x32.png">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --chirpy-primary: #FF6B35;
@@ -36,6 +35,7 @@
             line-height: 1.6;
         }
 
+        /* Header with ChirpyWeb Branding */
         .header {
             background: linear-gradient(135deg, var(--chirpy-primary) 0%, var(--chirpy-secondary) 100%);
             color: white;
@@ -62,6 +62,12 @@
             height: 40px;
         }
 
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
         .header-actions {
             display: flex;
             gap: 12px;
@@ -76,6 +82,7 @@
             backdrop-filter: blur(10px);
         }
 
+        /* Navigation Tabs */
         .nav-tabs {
             background: var(--bg-card);
             border-bottom: 2px solid var(--border);
@@ -114,12 +121,14 @@
             border-bottom-color: var(--chirpy-primary);
         }
 
+        /* Container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 30px 20px;
         }
 
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -178,6 +187,11 @@
             color: var(--chirpy-success);
         }
 
+        .stat-change.negative {
+            color: var(--chirpy-danger);
+        }
+
+        /* Cards */
         .card {
             background: var(--bg-card);
             border-radius: 12px;
@@ -201,6 +215,7 @@
             color: var(--text-primary);
         }
 
+        /* Forms */
         .form-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -236,11 +251,7 @@
             box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
         }
 
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
+        /* Buttons */
         .btn {
             padding: 12px 24px;
             border: none;
@@ -260,23 +271,12 @@
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
         }
 
         .btn-secondary {
-            background: white;
-            color: var(--chirpy-primary);
-            border: 2px solid var(--chirpy-primary);
-        }
-
-        .btn-secondary:hover {
-            background: var(--chirpy-primary);
-            color: white;
-        }
-
-        .btn-success {
-            background: var(--chirpy-success);
+            background: var(--text-secondary);
             color: white;
         }
 
@@ -285,46 +285,101 @@
             color: white;
         }
 
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 13px;
+        .btn-success {
+            background: var(--chirpy-success);
+            color: white;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        /* Campaign List */
+        .campaign-list {
+            display: grid;
+            gap: 16px;
         }
 
-        th, td {
-            padding: 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
+        .campaign-item {
             background: var(--bg-main);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .campaign-item:hover {
+            border-color: var(--chirpy-primary);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.1);
+        }
+
+        .campaign-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .campaign-title {
+            font-size: 18px;
             font-weight: 700;
             color: var(--text-primary);
-            text-transform: uppercase;
+        }
+
+        .campaign-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .campaign-stat {
+            text-align: center;
+        }
+
+        .campaign-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--chirpy-primary);
+        }
+
+        .campaign-stat-label {
             font-size: 12px;
-            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 4px;
         }
 
-        tr:hover {
+        /* Segmentation */
+        .segment-builder {
             background: var(--bg-main);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
         }
 
+        .segment-rule {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .segment-rule select {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* Badge */
         .badge {
             display: inline-block;
             padding: 4px 12px;
             border-radius: 12px;
             font-size: 12px;
             font-weight: 600;
-        }
-
-        .badge-success {
-            background: #d1fae5;
-            color: #065f46;
+            text-transform: uppercase;
         }
 
         .badge-sent {
@@ -332,72 +387,23 @@
             color: #065f46;
         }
 
-        .code-block {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            margin: 16px 0;
-            position: relative;
+        .badge-scheduled {
+            background: #fef3c7;
+            color: #92400e;
         }
 
-        .copy-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 6px 12px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
+        .badge-draft {
+            background: #e0e7ff;
+            color: #3730a3;
         }
 
-        .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
+        /* Charts */
         .chart-container {
             height: 300px;
             position: relative;
         }
 
-        .date-range {
-            display: flex;
-            gap: 1rem;
-            align-items: end;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-
-        .date-range input[type="date"] {
-            padding: 0.5rem;
-        }
-
-        .breakdown-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .breakdown-item {
-            padding: 0.75rem;
-            background: var(--bg-main);
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-        }
-
-        .breakdown-bar {
-            height: 8px;
-            background: var(--chirpy-primary);
-            border-radius: 4px;
-            margin-top: 0.5rem;
-        }
-
+        /* Alerts */
         .alert {
             padding: 16px 20px;
             border-radius: 12px;
@@ -426,6 +432,7 @@
             border: 1px solid #bfdbfe;
         }
 
+        /* Tab Content */
         .tab-content {
             display: none;
         }
@@ -435,55 +442,7 @@
         }
 
         .hidden {
-            display: none !important;
-        }
-
-        .auth-tabs {
-            display: flex;
-            gap: 0;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .auth-tab {
-            padding: 1rem 1.5rem;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            color: var(--text-secondary);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 15px;
-        }
-
-        .auth-tab:hover {
-            color: var(--chirpy-primary);
-            background: rgba(255, 107, 53, 0.05);
-        }
-
-        .auth-tab.active {
-            color: var(--chirpy-primary);
-            border-bottom-color: var(--chirpy-primary);
-        }
-
-        .auth-tab-content {
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .key-display {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 8px;
-            font-family: monospace;
-            word-break: break-all;
-            border: 2px solid var(--chirpy-primary);
+            display: none;
         }
 
         .loading {
@@ -511,6 +470,7 @@
             }
         }
 
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -523,6 +483,7 @@
             opacity: 0.5;
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -540,11 +501,6 @@
             .nav-tabs-container {
                 overflow-x: auto;
             }
-
-            .date-range {
-                flex-direction: column;
-                align-items: stretch;
-            }
         }
     </style>
 </head>
@@ -561,75 +517,44 @@
 
         <div class="container">
             <div class="card">
-                <div class="auth-tabs">
-                    <button class="auth-tab active" id="loginTabBtn">🔑 Login</button>
-                    <button class="auth-tab" id="signupTabBtn">🚀 Create Account</button>
-                    <button class="auth-tab" id="forgotTabBtn">🔓 Forgot Key?</button>
+                <div class="card-header">
+                    <h2 class="card-title">🚀 Get Started with ChirpyWeb</h2>
+                </div>
+                
+                <div id="authAlert"></div>
+                
+                <form onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="email">📧 Email Address</label>
+                        <input type="email" id="email" required placeholder="your@email.com">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        Create Account
+                    </button>
+                </form>
+
+                <div id="apiKeyDisplay" class="hidden" style="margin-top: 24px;">
+                    <div class="alert alert-success">
+                        <span style="font-size: 24px;">✓</span>
+                        <div>
+                            <strong>Welcome to ChirpyWeb!</strong><br>
+                            Save your Master API Key:
+                            <div style="background: white; padding: 12px; border-radius: 8px; margin-top: 8px; font-family: monospace; word-break: break-all;" id="masterApiKey"></div>
+                        </div>
+                    </div>
+                    <button onclick="loginWithKey()" class="btn btn-success">
+                        Continue to Dashboard →
+                    </button>
                 </div>
 
-                <div id="authAlert"></div>
-
-                <!-- Login Tab -->
-                <div id="loginTab" class="auth-tab-content">
-                    <h2 style="margin-bottom: 1.5rem;">Sign In to Your Dashboard</h2>
+                <div style="margin-top: 40px; padding-top: 32px; border-top: 2px solid var(--border);">
+                    <h3 style="margin-bottom: 16px;">Already have an account?</h3>
                     <div class="form-group">
                         <label for="loginApiKey">🔑 Master API Key</label>
                         <input type="text" id="loginApiKey" placeholder="Paste your API key">
                     </div>
                     <button onclick="loginWithKey()" class="btn btn-primary">Sign In</button>
-                </div>
-
-                <!-- Signup Tab -->
-                <div id="signupTab" class="auth-tab-content hidden">
-                    <h2 style="margin-bottom: 1.5rem;">Create Your Account</h2>
-                    <form onsubmit="handleSignup(event)">
-                        <div class="form-group">
-                            <label for="email">📧 Email Address</label>
-                            <input type="email" id="email" required placeholder="your@email.com">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Create Account</button>
-                    </form>
-
-                    <div id="apiKeyDisplay" class="hidden" style="margin-top: 24px;">
-                        <div class="alert alert-success">
-                            <span style="font-size: 24px;">✓</span>
-                            <div>
-                                <strong>Welcome to ChirpyWeb!</strong><br>
-                                Save your Master API Key:
-                                <div class="key-display" id="masterApiKey"></div>
-                            </div>
-                        </div>
-                        <button onclick="loginWithKey()" class="btn btn-success">
-                            Continue to Dashboard →
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Forgot Password Tab -->
-                <div id="forgotTab" class="auth-tab-content hidden">
-                    <h2 style="margin-bottom: 1.5rem;">Retrieve Your API Key</h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                        Enter the email address you used to create your account. We'll display your Master API Key.
-                    </p>
-                    <div class="form-group">
-                        <label for="forgotEmail">📧 Email Address</label>
-                        <input type="email" id="forgotEmail" placeholder="your@email.com">
-                    </div>
-                    <button onclick="retrieveApiKey()" class="btn btn-primary">Retrieve API Key</button>
-                    
-                    <div id="retrievedKeyDisplay" class="hidden" style="margin-top: 24px;">
-                        <div class="alert alert-success">
-                            <span style="font-size: 24px;">✓</span>
-                            <div>
-                                <strong>Your Master API Key:</strong><br>
-                                <div class="key-display" id="retrievedApiKey"></div>
-                                <p style="margin-top: 1rem; font-size: 0.875rem;">⚠️ Save this key securely!</p>
-                            </div>
-                        </div>
-                        <button onclick="showAuthTab('login')" class="btn btn-secondary">
-                            Back to Login →
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -661,7 +586,7 @@
         </div>
 
         <div class="container">
-            <!-- Rest of dashboard tabs here - keeping original content -->
+            <!-- Overview Tab -->
             <div id="overviewTab" class="tab-content active">
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -697,35 +622,188 @@
                         <div class="stat-change positive">↑ 2.3%</div>
                     </div>
                 </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📈 Performance Overview</h2>
+                    </div>
+                    <div class="chart-container">
+                        <div class="empty-state">
+                            <div class="empty-icon">📊</div>
+                            <h3>Performance Charts</h3>
+                            <p>Analytics will appear here once you send campaigns</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
+            <!-- Websites Tab -->
             <div id="websitesTab" class="tab-content">
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">🌐 My Websites</h2>
                     </div>
+                    
+                    <div id="websiteAlert"></div>
+
+                    <form onsubmit="addWebsite(event)" style="margin-bottom: 30px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="websiteDomain">Website Domain</label>
+                                <input type="text" id="websiteDomain" required placeholder="example.com">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">➕ Add Website</button>
+                    </form>
+
                     <div id="websitesList"></div>
+                </div>
+
+                <!-- Selected Website Section -->
+                <div id="selectedWebsiteSection" class="hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">🔧 Integration Code</h2>
+                            <span class="badge badge-sent" id="selectedDomain"></span>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <span>🔑</span>
+                            <div>
+                                <strong>API Key:</strong>
+                                <div style="background: var(--chirpy-dark); color: white; padding: 12px; border-radius: 8px; margin-top: 8px; font-family: monospace; overflow-x: auto;" id="selectedApiKey"></div>
+                            </div>
+                        </div>
+
+                        <h3 style="margin: 24px 0 12px;">SDK Integration:</h3>
+                        <div style="background: var(--chirpy-dark); color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto;">
+                            <code id="initCode"></code>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Campaigns Tab -->
             <div id="campaignsTab" class="tab-content">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="card-title">📤 Campaigns</h2>
+                        <h2 class="card-title">📤 Create Campaign</h2>
+                        <button class="btn btn-secondary" onclick="toggleCampaignForm()">+ New Campaign</button>
                     </div>
-                    <div id="campaignsList"></div>
+
+                    <div id="campaignForm" class="hidden">
+                        <div id="campaignAlert"></div>
+                        <form onsubmit="createCampaign(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="campaignName">Campaign Name</label>
+                                    <input type="text" id="campaignName" required placeholder="Summer Sale 2024">
+                                </div>
+                                <div class="form-group">
+                                    <label for="campaignWebsite">Select Website</label>
+                                    <select id="campaignWebsite" required>
+                                        <option value="">Choose website...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="campaignTitle">Notification Title</label>
+                                <input type="text" id="campaignTitle" required placeholder="🎉 Summer Sale is Live!">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="campaignBody">Notification Message</label>
+                                <textarea id="campaignBody" required placeholder="Get 50% off on all products..."></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="campaignIcon">Icon URL</label>
+                                    <input type="url" id="campaignIcon" placeholder="https://example.com/icon.png">
+                                </div>
+                                <div class="form-group">
+                                    <label for="campaignUrl">Click URL</label>
+                                    <input type="url" id="campaignUrl" placeholder="https://example.com/sale">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="campaignSegment">Segment (Optional)</label>
+                                    <select id="campaignSegment">
+                                        <option value="">All Subscribers</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="campaignSchedule">Schedule</label>
+                                    <select id="campaignSchedule">
+                                        <option value="now">Send Now</option>
+                                        <option value="schedule">Schedule for Later</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-success" style="font-size: 16px; padding: 14px 32px;">
+                                🚀 Send Campaign
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📊 Campaign History</h2>
+                    </div>
+                    <div id="campaignsList" class="campaign-list"></div>
                 </div>
             </div>
 
+            <!-- Segments Tab -->
             <div id="segmentsTab" class="tab-content">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="card-title">🎯 Segments</h2>
+                        <h2 class="card-title">🎯 Audience Segments</h2>
+                        <button class="btn btn-primary" onclick="toggleSegmentForm()">+ Create Segment</button>
                     </div>
+
+                    <div id="segmentForm" class="hidden">
+                        <div class="segment-builder">
+                            <h3 style="margin-bottom: 16px;">Build Your Segment</h3>
+                            
+                            <div class="segment-rule">
+                                <select>
+                                    <option>Platform</option>
+                                    <option>Browser</option>
+                                    <option>Location</option>
+                                    <option>Subscription Date</option>
+                                </select>
+                                <select>
+                                    <option>is</option>
+                                    <option>is not</option>
+                                    <option>contains</option>
+                                </select>
+                                <input type="text" placeholder="Value" style="flex: 1;">
+                                <button class="btn btn-danger" style="padding: 8px 16px;">Remove</button>
+                            </div>
+
+                            <button class="btn btn-secondary" style="margin-top: 12px;">+ Add Rule</button>
+                            
+                            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--border);">
+                                <div class="form-group">
+                                    <label>Segment Name</label>
+                                    <input type="text" placeholder="e.g., Chrome Users in USA">
+                                </div>
+                                <button class="btn btn-success">💾 Save Segment</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="segmentsList"></div>
                 </div>
             </div>
 
+            <!-- Analytics Tab -->
             <div id="analyticsTab" class="tab-content">
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -733,7 +811,7 @@
                             <span class="stat-label">Total Sent</span>
                             <span class="stat-icon">📤</span>
                         </div>
-                        <div class="stat-value" id="totalSent">0</div>
+                        <div class="stat-value">0</div>
                         <div class="stat-change">All time</div>
                     </div>
                     <div class="stat-card">
@@ -741,24 +819,24 @@
                             <span class="stat-label">Delivered</span>
                             <span class="stat-icon">✓</span>
                         </div>
-                        <div class="stat-value" id="totalDelivered">0</div>
-                        <div class="stat-change positive"><span id="deliveryRate">100</span>% delivery rate</div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-change positive">100% delivery rate</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
                             <span class="stat-label">Clicks</span>
                             <span class="stat-icon">👆</span>
                         </div>
-                        <div class="stat-value" id="totalClicked">0</div>
-                        <div class="stat-change"><span id="ctrRate">0</span>% CTR</div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-change">0% CTR</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
-                            <span class="stat-label">New This Week</span>
-                            <span class="stat-icon">👥</span>
+                            <span class="stat-label">Avg. CTR</span>
+                            <span class="stat-icon">📊</span>
                         </div>
-                        <div class="stat-value" id="weekSubscribers">0</div>
-                        <div class="stat-change positive">Subscribers</div>
+                        <div class="stat-value">0%</div>
+                        <div class="stat-change">Industry avg: 3.2%</div>
                     </div>
                 </div>
 
@@ -766,58 +844,11 @@
                     <div class="card-header">
                         <h2 class="card-title">📈 Subscriber Growth</h2>
                     </div>
-                    <div class="date-range">
-                        <div>
-                            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Start Date</label>
-                            <input type="date" id="startDate">
-                        </div>
-                        <div>
-                            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">End Date</label>
-                            <input type="date" id="endDate">
-                        </div>
-                        <button class="btn btn-primary" onclick="loadGrowthData()">Update Chart</button>
-                    </div>
                     <div class="chart-container">
-                        <canvas id="growthChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">👥 Subscriber Demographics</h2>
-                    </div>
-                    <div class="breakdown-grid">
-                        <div>
-                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Platform</h3>
-                            <div id="platformBreakdown">
-                                <div class="empty-state">
-                                    <p>No subscriber data yet</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Browser</h3>
-                            <div id="browserBreakdown">
-                                <div class="empty-state">
-                                    <p>No subscriber data yet</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Top Countries</h3>
-                            <div id="countryBreakdown">
-                                <div class="empty-state">
-                                    <p>No subscriber data yet</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Website</h3>
-                            <div id="websiteBreakdown">
-                                <div class="empty-state">
-                                    <p>No websites yet</p>
-                                </div>
-                            </div>
+                        <div class="empty-state">
+                            <div class="empty-icon">📊</div>
+                            <h3>Growth Chart</h3>
+                            <p>Subscriber growth will be displayed here</p>
                         </div>
                     </div>
                 </div>
@@ -832,202 +863,25 @@
         let websites = [];
         let campaigns = [];
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Page loaded, initializing...');
-            
-            // Attach auth tab click handlers
-            const loginBtn = document.getElementById('loginTabBtn');
-            const signupBtn = document.getElementById('signupTabBtn');
-            const forgotBtn = document.getElementById('forgotTabBtn');
-            
-            if (loginBtn) {
-                loginBtn.addEventListener('click', function() {
-                    console.log('Login tab clicked');
-                    showAuthTab('login');
-                });
-            }
-            
-            if (signupBtn) {
-                signupBtn.addEventListener('click', function() {
-                    console.log('Signup tab clicked');
-                    showAuthTab('signup');
-                });
-            }
-            
-            if (forgotBtn) {
-                forgotBtn.addEventListener('click', function() {
-                    console.log('Forgot tab clicked');
-                    showAuthTab('forgot');
-                });
-            }
-            
-            console.log('Event listeners attached');
-            
-            // Check if already logged in
-            const masterApiKey = localStorage.getItem('masterApiKey');
-            if (masterApiKey) {
-                showDashboard();
-            }
-        });
-
-        function showAuthTab(tabName) {
-            console.log('Switching to tab:', tabName);
-            
-            // Remove active class from all tabs
-            document.querySelectorAll('.auth-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Add active class to clicked tab
-            const tabBtn = document.getElementById(tabName + 'TabBtn');
-            if (tabBtn) {
-                tabBtn.classList.add('active');
-            }
-            
-            // Hide all tab contents
-            document.querySelectorAll('.auth-tab-content').forEach(content => {
-                content.classList.add('hidden');
-            });
-            
-            // Show selected tab content
-            const tabContent = document.getElementById(tabName + 'Tab');
-            if (tabContent) {
-                tabContent.classList.remove('hidden');
-            } else {
-                console.error('Tab content not found:', tabName + 'Tab');
-            }
-        }
-
+        // Tab Switching
         function switchTab(tabName) {
+            // Update tab buttons
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
             
+            // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(tabName + 'Tab').classList.add('active');
             
+            // Load data for tab
             if (tabName === 'campaigns') {
                 loadCampaigns();
             } else if (tabName === 'analytics') {
                 loadAnalytics();
-            } else if (tabName === 'websites') {
-                loadWebsites();
             }
         }
 
-        function handleSignup(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-
-            fetch(`${API_URL}/api/users/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('masterApiKey').textContent = data.masterApiKey;
-                    document.getElementById('apiKeyDisplay').classList.remove('hidden');
-                    localStorage.setItem('masterApiKey', data.masterApiKey);
-                    localStorage.setItem('userEmail', email);
-                } else {
-                    showAlert('authAlert', 'error', data.error || 'Failed to create account');
-                }
-            })
-            .catch(error => showAlert('authAlert', 'error', 'Error: ' + error.message));
-        }
-
-        function loginWithKey() {
-            let apiKey = document.getElementById('loginApiKey').value || localStorage.getItem('masterApiKey');
-            
-            if (!apiKey) {
-                showAlert('authAlert', 'error', 'Please enter your API key');
-                return;
-            }
-
-            fetch(`${API_URL}/api/users/info`, {
-                headers: { 'X-API-Key': apiKey }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    localStorage.setItem('masterApiKey', apiKey);
-                    localStorage.setItem('userEmail', data.email);
-                    showDashboard();
-                } else {
-                    showAlert('authAlert', 'error', 'Invalid API key');
-                }
-            })
-            .catch(error => showAlert('authAlert', 'error', 'Login failed'));
-        }
-
-        function retrieveApiKey() {
-            const email = document.getElementById('forgotEmail').value.trim();
-            if (!email) {
-                showAlert('authAlert', 'error', 'Please enter your email address');
-                return;
-            }
-
-            fetch(`${API_URL}/api/users/retrieve-key`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('retrievedApiKey').textContent = data.masterApiKey;
-                    document.getElementById('retrievedKeyDisplay').classList.remove('hidden');
-                    showAlert('authAlert', 'success', 'API key retrieved successfully!');
-                } else {
-                    showAlert('authAlert', 'error', data.error || 'Failed to retrieve key');
-                }
-            })
-            .catch(err => showAlert('authAlert', 'error', 'Failed to retrieve key: ' + err.message));
-        }
-
-        function showDashboard() {
-            document.getElementById('authSection').classList.add('hidden');
-            document.getElementById('dashboardSection').classList.remove('hidden');
-            document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
-            loadWebsites();
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        function showAlert(elementId, type, message) {
-            const alertDiv = document.getElementById(elementId);
-            if (alertDiv) {
-                alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
-                setTimeout(() => alertDiv.innerHTML = '', 5000);
-            }
-        }
-
-        function loadWebsites() {
-            const masterApiKey = localStorage.getItem('masterApiKey');
-            fetch(`${API_URL}/api/websites`, {
-                headers: { 'X-API-Key': masterApiKey }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('websiteCount').textContent = data.websites.length;
-                    const totalSubs = data.websites.reduce((sum, w) => sum + w.subscriberCount, 0);
-                    document.getElementById('totalSubscribers').textContent = totalSubs;
-                }
-            });
-        }
-
-        function loadCampaigns() {
-            // Campaign loading logic here
-        }
-
+        // Load Analytics
         function loadAnalytics() {
             const masterApiKey = localStorage.getItem('masterApiKey');
             
@@ -1038,147 +892,410 @@
             .then(data => {
                 if (data.success) {
                     const stats = data.analytics;
-                    document.getElementById('totalSent').textContent = stats.totalSent;
-                    document.getElementById('totalDelivered').textContent = stats.totalDelivered;
-                    document.getElementById('totalClicked').textContent = stats.totalClicked;
-                    document.getElementById('deliveryRate').textContent = stats.deliveryRate;
-                    document.getElementById('ctrRate').textContent = stats.avgCTR;
+                    
+                    // Update analytics stats
+                    document.querySelector('#analyticsTab .stat-value:nth-of-type(1)').textContent = stats.totalSent;
+                    document.querySelector('#analyticsTab .stat-value:nth-of-type(2)').textContent = stats.totalDelivered;
+                    document.querySelector('#analyticsTab .stat-value:nth-of-type(3)').textContent = stats.totalClicked;
+                    document.querySelector('#analyticsTab .stat-value:nth-of-type(4)').textContent = stats.avgCTR + '%';
+                    
+                    // Update stat changes
+                    const statChanges = document.querySelectorAll('#analyticsTab .stat-change');
+                    statChanges[0].textContent = 'All time';
+                    statChanges[1].textContent = stats.deliveryRate + '% delivery rate';
+                    statChanges[2].textContent = stats.avgCTR + '% CTR';
+                    statChanges[3].textContent = 'Industry avg: 3.2%';
                 }
-            });
-
-            const endDate = new Date();
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - 6);
-            
-            document.getElementById('startDate').valueAsDate = startDate;
-            document.getElementById('endDate').valueAsDate = endDate;
-
-            loadGrowthData();
-            loadSubscriberAnalytics();
-        }
-
-        let growthChart = null;
-        function loadGrowthData() {
-            const masterApiKey = localStorage.getItem('masterApiKey');
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-
-            fetch(`${API_URL}/api/analytics/subscriber-growth?startDate=${startDate}&endDate=${endDate}`, {
-                headers: { 'X-API-Key': masterApiKey }
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('weekSubscribers').textContent = data.totalInRange;
-                    renderGrowthChart(data.growth);
-                }
+            .catch(error => {
+                console.error('Error loading analytics:', error);
             });
         }
 
-        function renderGrowthChart(growthData) {
-            const ctx = document.getElementById('growthChart').getContext('2d');
-            
-            if (growthChart) {
-                growthChart.destroy();
+        // Check if logged in
+        window.addEventListener('load', () => {
+            const savedApiKey = localStorage.getItem('masterApiKey');
+            if (savedApiKey) {
+                document.getElementById('loginApiKey').value = savedApiKey;
+                loginWithKey();
             }
+        });
 
-            growthChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: growthData.map(d => d.displayDate),
-                    datasets: [{
-                        label: 'New Subscribers',
-                        data: growthData.map(d => d.subscribers),
-                        borderColor: '#FF6B35',
-                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 5,
-                        pointHoverRadius: 7
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                title: function(context) {
-                                    const index = context[0].dataIndex;
-                                    return `${growthData[index].day}, ${growthData[index].displayDate}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { stepSize: 1 }
-                        }
+        async function handleSignup(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Creating...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/users/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('masterApiKey').textContent = data.masterApiKey;
+                    document.getElementById('apiKeyDisplay').classList.remove('hidden');
+                    localStorage.setItem('masterApiKey', data.masterApiKey);
+                    localStorage.setItem('userEmail', data.email);
+                    showAlert('authAlert', 'success', '✓ Account created!');
+                } else {
+                    showAlert('authAlert', 'error', data.error);
+                }
+            } catch (error) {
+                showAlert('authAlert', 'error', error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        }
+
+        async function loginWithKey() {
+            const apiKey = document.getElementById('loginApiKey').value || localStorage.getItem('masterApiKey');
+            if (!apiKey) {
+                showAlert('authAlert', 'error', 'Please enter your API key');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/users/info`, {
+                    headers: { 'X-API-Key': apiKey }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    localStorage.setItem('masterApiKey', apiKey);
+                    localStorage.setItem('userEmail', data.email);
+                    currentUser = data;
+                    showDashboard();
+                } else {
+                    showAlert('authAlert', 'error', data.error);
+                }
+            } catch (error) {
+                showAlert('authAlert', 'error', error.message);
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
+            loadDashboard();
+        }
+
+        async function loadDashboard() {
+            const apiKey = localStorage.getItem('masterApiKey');
+            try {
+                const response = await fetch(`${API_URL}/api/users/info`, {
+                    headers: { 'X-API-Key': apiKey }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('websiteCount').textContent = data.websiteCount || 0;
+                    document.getElementById('totalSubscribers').textContent = data.totalSubscribers || 0;
+                    loadWebsites();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function loadWebsites() {
+            const apiKey = localStorage.getItem('masterApiKey');
+            try {
+                const response = await fetch(`${API_URL}/api/websites`, {
+                    headers: { 'X-API-Key': apiKey }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    websites = data.websites;
+                    const websitesList = document.getElementById('websitesList');
+                    const campaignWebsiteSelect = document.getElementById('campaignWebsite');
+                    
+                    if (data.websites.length === 0) {
+                        websitesList.innerHTML = `<div class="empty-state"><div class="empty-icon">🌐</div><h3>No websites yet</h3><p>Add your first website above</p></div>`;
+                        return;
                     }
+
+                    websitesList.innerHTML = data.websites.map(site => `
+                        <div class="campaign-item">
+                            <div class="campaign-header">
+                                <div>
+                                    <div class="campaign-title">🌐 ${site.domain}</div>
+                                    <div style="color: var(--text-secondary); margin-top: 4px;">
+                                        ${site.subscriberCount} subscribers
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-primary" onclick='selectWebsite(${JSON.stringify(site)})'>Manage</button>
+                                    <button class="btn btn-danger" onclick="deleteWebsite('${site.websiteId}')">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Populate campaign website select
+                    campaignWebsiteSelect.innerHTML = '<option value="">Choose website...</option>' + 
+                        data.websites.map(site => `<option value="${site.websiteId}">${site.domain}</option>`).join('');
                 }
-            });
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
 
-        function loadSubscriberAnalytics() {
-            const masterApiKey = localStorage.getItem('masterApiKey');
+        async function addWebsite(event) {
+            event.preventDefault();
+            const domain = document.getElementById('websiteDomain').value;
+            const apiKey = localStorage.getItem('masterApiKey');
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Adding...';
+
+            try {
+                const response = await fetch(`${API_URL}/api/websites/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': apiKey
+                    },
+                    body: JSON.stringify({ domain })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('websiteAlert', 'success', `✓ Website added!`);
+                    document.getElementById('websiteDomain').value = '';
+                    loadDashboard();
+                    loadWebsites();
+                } else {
+                    showAlert('websiteAlert', 'error', data.error);
+                }
+            } catch (error) {
+                showAlert('websiteAlert', 'error', error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+            }
+        }
+
+        async function deleteWebsite(websiteId) {
+            if (!confirm('Delete this website and all subscribers?')) return;
+            const apiKey = localStorage.getItem('masterApiKey');
+            try {
+                const response = await fetch(`${API_URL}/api/websites/${websiteId}`, {
+                    method: 'DELETE',
+                    headers: { 'X-API-Key': apiKey }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('websiteAlert', 'success', '✓ Deleted');
+                    loadDashboard();
+                    loadWebsites();
+                    document.getElementById('selectedWebsiteSection').classList.add('hidden');
+                } else {
+                    showAlert('websiteAlert', 'error', data.error);
+                }
+            } catch (error) {
+                showAlert('websiteAlert', 'error', error.message);
+            }
+        }
+
+        function selectWebsite(site) {
+            currentWebsite = site;
+            document.getElementById('selectedWebsiteSection').classList.remove('hidden');
+            document.getElementById('selectedDomain').textContent = site.domain;
+            document.getElementById('selectedApiKey').textContent = site.apiKey;
+
+            const initCode = `<script src="https://akchirpy.github.io/web-push-service/web-push-sdk.js"><\/script>
+<script>
+const pushSDK = new WebPushSDK({
+    apiKey: '${site.apiKey}',
+    serverUrl: '${API_URL}'
+});
+pushSDK.init();
+<\/script>`;
+            document.getElementById('initCode').textContent = initCode;
+            document.getElementById('selectedWebsiteSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleCampaignForm() {
+            document.getElementById('campaignForm').classList.toggle('hidden');
+        }
+
+        function toggleSegmentForm() {
+            document.getElementById('segmentForm').classList.toggle('hidden');
+        }
+
+        async function createCampaign(event) {
+            event.preventDefault();
             
-            fetch(`${API_URL}/api/analytics/subscribers`, {
+            const websiteId = document.getElementById('campaignWebsite').value;
+            const campaignName = document.getElementById('campaignName').value;
+            
+            if (!websiteId) {
+                showAlert('campaignAlert', 'error', 'Please select a website');
+                return;
+            }
+
+            const website = websites.find(w => w.websiteId === websiteId);
+            if (!website) return;
+
+            const title = document.getElementById('campaignTitle').value;
+            const body = document.getElementById('campaignBody').value;
+            const icon = document.getElementById('campaignIcon').value;
+            const url = document.getElementById('campaignUrl').value;
+            const segmentId = document.getElementById('campaignSegment').value || null;
+
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Creating...';
+
+            const masterApiKey = localStorage.getItem('masterApiKey');
+
+            try {
+                // Step 1: Create campaign
+                const createResponse = await fetch(`${API_URL}/api/campaigns/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': masterApiKey
+                    },
+                    body: JSON.stringify({
+                        websiteId,
+                        name: campaignName,
+                        title,
+                        body,
+                        icon,
+                        url,
+                        segmentId
+                    })
+                });
+
+                const createData = await createResponse.json();
+                
+                if (!createData.success) {
+                    showAlert('campaignAlert', 'error', createData.error || 'Failed to create campaign');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHTML;
+                    return;
+                }
+
+                // Step 2: Send campaign
+                submitBtn.innerHTML = '<span class="loading"></span> Sending...';
+                
+                const sendResponse = await fetch(`${API_URL}/api/campaigns/${createData.campaign.campaignId}/send`, {
+                    method: 'POST',
+                    headers: {
+                        'X-API-Key': masterApiKey
+                    }
+                });
+
+                const sendData = await sendResponse.json();
+                
+                if (sendData.success) {
+                    showAlert('campaignAlert', 'success', `🎉 Campaign sent to ${sendData.sent} subscribers!`);
+                    event.target.reset();
+                    setTimeout(() => {
+                        toggleCampaignForm();
+                        loadCampaigns();
+                        loadDashboard();
+                    }, 1500);
+                } else {
+                    showAlert('campaignAlert', 'error', sendData.error || 'Failed to send campaign');
+                }
+            } catch (error) {
+                showAlert('campaignAlert', 'error', 'Error: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+            }
+        }
+
+        function loadCampaigns() {
+            const masterApiKey = localStorage.getItem('masterApiKey');
+            const campaignsList = document.getElementById('campaignsList');
+            
+            // Fetch all campaigns for the user
+            fetch(`${API_URL}/api/campaigns/all/list`, {
                 headers: { 'X-API-Key': masterApiKey }
             })
             .then(res => res.json())
             .then(data => {
-                if (data.success) {
-                    renderBreakdown('platformBreakdown', data.subscribers.platformBreakdown);
-                    renderBreakdown('browserBreakdown', data.subscribers.browserBreakdown);
-                    renderBreakdown('countryBreakdown', data.subscribers.countryBreakdown);
-                    renderWebsiteStats(data.subscribers.websiteStats);
+                if (data.success && data.campaigns.length > 0) {
+                    campaignsList.innerHTML = data.campaigns.map(campaign => `
+                        <div class="campaign-item">
+                            <div class="campaign-header">
+                                <div>
+                                    <div class="campaign-title">${campaign.name}</div>
+                                    <div style="color: var(--text-secondary); margin-top: 4px; font-size: 14px;">
+                                        ${campaign.websiteDomain} • ${new Date(campaign.createdAt).toLocaleDateString()}
+                                    </div>
+                                </div>
+                                <span class="badge ${campaign.status === 'sent' ? 'badge-sent' : campaign.status === 'scheduled' ? 'badge-scheduled' : 'badge-draft'}">
+                                    ${campaign.status}
+                                </span>
+                            </div>
+                            <div style="margin-top: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                                <strong>${campaign.title}</strong>
+                                <p style="color: var(--text-secondary); margin-top: 4px;">${campaign.body}</p>
+                            </div>
+                            <div class="campaign-stats">
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value">${campaign.stats.sent}</div>
+                                    <div class="campaign-stat-label">Sent</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value">${campaign.stats.delivered}</div>
+                                    <div class="campaign-stat-label">Delivered</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value">${campaign.stats.clicked}</div>
+                                    <div class="campaign-stat-label">Clicked</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value" style="color: var(--chirpy-primary);">${campaign.ctr}%</div>
+                                    <div class="campaign-stat-label">CTR</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    campaignsList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📤</div>
+                            <h3>No campaigns yet</h3>
+                            <p>Create your first campaign above</p>
+                        </div>
+                    `;
                 }
+            })
+            .catch(error => {
+                console.error('Error loading campaigns:', error);
+                campaignsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📤</div>
+                        <h3>No campaigns yet</h3>
+                        <p>Create your first campaign above</p>
+                    </div>
+                `;
             });
         }
 
-        function renderBreakdown(elementId, data) {
-            const container = document.getElementById(elementId);
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>No data available</p></div>';
-                return;
+        function logout() {
+            if (confirm('Logout?')) {
+                localStorage.clear();
+                location.reload();
             }
-
-            const maxCount = Math.max(...data.map(d => d.count));
-            container.innerHTML = data.map(item => `
-                <div class="breakdown-item">
-                    <div>
-                        <strong>${item.name}</strong>
-                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                            ${item.count} subscribers (${item.percentage}%)
-                        </div>
-                        <div class="breakdown-bar" style="width: ${(item.count / maxCount) * 100}%"></div>
-                    </div>
-                </div>
-            `).join('');
         }
 
-        function renderWebsiteStats(websites) {
-            const container = document.getElementById('websiteBreakdown');
-            if (!websites || websites.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>No websites yet</p></div>';
-                return;
-            }
-
-            const maxCount = Math.max(...websites.map(w => w.totalSubscribers));
-            container.innerHTML = websites.map(website => `
-                <div class="breakdown-item">
-                    <div>
-                        <strong>${website.domain}</strong>
-                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                            ${website.totalSubscribers} subscribers 
-                            ${website.recentGrowth > 0 ? `(+${website.recentGrowth} this week)` : ''}
-                        </div>
-                        <div class="breakdown-bar" style="width: ${(website.totalSubscribers / maxCount) * 100}%"></div>
-                    </div>
-                </div>
-            `).join('');
+        function showAlert(elementId, type, message) {
+            const alertDiv = document.getElementById(elementId);
+            const alertClass = type === 'success' ? 'alert-success' : (type === 'error' ? 'alert-error' : 'alert-info');
+            const icon = type === 'success' ? '✓' : '✗';
+            alertDiv.innerHTML = `<div class="alert ${alertClass}"><span style="font-size: 20px;">${icon}</span><span>${message}</span></div>`;
+            setTimeout(() => alertDiv.innerHTML = '', 5000);
         }
     </script>
 </body>

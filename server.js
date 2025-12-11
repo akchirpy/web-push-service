@@ -729,6 +729,167 @@ app.get('/api/analytics/overview', (req, res) => {
   });
 });
 
+// Get subscriber growth analytics
+app.get('/api/analytics/subscriber-growth', (req, res) => {
+  const masterApiKey = req.headers['x-api-key'];
+  
+  if (!masterApiKey) {
+    return res.status(401).json({ error: 'Master API key required' });
+  }
+
+  const user = Array.from(users.values()).find(u => u.masterApiKey === masterApiKey);
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid API key' });
+  }
+
+  const { startDate, endDate } = req.query;
+  
+  // Get all user's websites
+  const userWebsites = Array.from(websites.values())
+    .filter(w => w.userId === user.userId);
+  
+  const websiteIds = userWebsites.map(w => w.websiteId);
+  
+  // Get all subscriptions for user's websites
+  const userSubscriptions = Array.from(subscriptions.values())
+    .filter(sub => websiteIds.includes(sub.websiteId));
+  
+  // Parse date range
+  const start = startDate ? new Date(startDate) : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const end = endDate ? new Date(endDate) : new Date();
+  end.setHours(23, 59, 59, 999); // Include full end date
+  
+  // Group subscriptions by date
+  const dailyGrowth = {};
+  const currentDate = new Date(start);
+  
+  // Initialize all dates in range with 0
+  while (currentDate <= end) {
+    const dateKey = currentDate.toISOString().split('T')[0];
+    dailyGrowth[dateKey] = 0;
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  
+  // Count subscriptions by date
+  userSubscriptions.forEach(sub => {
+    const subDate = new Date(sub.createdAt);
+    if (subDate >= start && subDate <= end) {
+      const dateKey = subDate.toISOString().split('T')[0];
+      if (dailyGrowth[dateKey] !== undefined) {
+        dailyGrowth[dateKey]++;
+      }
+    }
+  });
+  
+  // Convert to array format with day names
+  const growthData = Object.entries(dailyGrowth)
+    .map(([date, count]) => {
+      const d = new Date(date);
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      return {
+        date,
+        day: dayNames[d.getDay()],
+        subscribers: count,
+        displayDate: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      };
+    })
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  res.json({
+    success: true,
+    growth: growthData,
+    totalInRange: Object.values(dailyGrowth).reduce((sum, count) => sum + count, 0),
+    startDate: start.toISOString().split('T')[0],
+    endDate: end.toISOString().split('T')[0]
+  });
+});
+
+// Get detailed subscriber information
+app.get('/api/analytics/subscribers', (req, res) => {
+  const masterApiKey = req.headers['x-api-key'];
+  
+  if (!masterApiKey) {
+    return res.status(401).json({ error: 'Master API key required' });
+  }
+
+  const user = Array.from(users.values()).find(u => u.masterApiKey === masterApiKey);
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid API key' });
+  }
+  
+  // Get all user's websites
+  const userWebsites = Array.from(websites.values())
+    .filter(w => w.userId === user.userId);
+  
+  const websiteIds = userWebsites.map(w => w.websiteId);
+  
+  // Get all subscriptions for user's websites
+  const userSubscriptions = Array.from(subscriptions.values())
+    .filter(sub => websiteIds.includes(sub.websiteId));
+  
+  // Analyze subscriber data
+  const platformBreakdown = {};
+  const browserBreakdown = {};
+  const countryBreakdown = {};
+  const cityBreakdown = {};
+  
+  userSubscriptions.forEach(sub => {
+    const metadata = sub.metadata || {};
+    
+    // Platform
+    const platform = metadata.platform || 'Unknown';
+    platformBreakdown[platform] = (platformBreakdown[platform] || 0) + 1;
+    
+    // Browser
+    const browser = metadata.browser || 'Unknown';
+    browserBreakdown[browser] = (browserBreakdown[browser] || 0) + 1;
+    
+    // Country
+    const country = metadata.country || 'Unknown';
+    countryBreakdown[country] = (countryBreakdown[country] || 0) + 1;
+    
+    // City
+    const city = metadata.city || 'Unknown';
+    cityBreakdown[city] = (cityBreakdown[city] || 0) + 1;
+  });
+  
+  // Get per-website stats
+  const websiteStats = userWebsites.map(website => {
+    const websiteSubscriptions = userSubscriptions.filter(sub => sub.websiteId === website.websiteId);
+    
+    // Get recent growth (last 7 days)
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const recentSubs = websiteSubscriptions.filter(sub => new Date(sub.createdAt) >= sevenDaysAgo);
+    
+    return {
+      websiteId: website.websiteId,
+      domain: website.domain,
+      totalSubscribers: websiteSubscriptions.length,
+      recentGrowth: recentSubs.length,
+      createdAt: website.createdAt
+    };
+  });
+  
+  // Sort breakdowns by count
+  const sortBreakdown = (breakdown) => {
+    return Object.entries(breakdown)
+      .map(([key, value]) => ({ name: key, count: value, percentage: ((value / userSubscriptions.length) * 100).toFixed(1) }))
+      .sort((a, b) => b.count - a.count);
+  };
+  
+  res.json({
+    success: true,
+    subscribers: {
+      total: userSubscriptions.length,
+      platformBreakdown: sortBreakdown(platformBreakdown),
+      browserBreakdown: sortBreakdown(browserBreakdown),
+      countryBreakdown: sortBreakdown(countryBreakdown).slice(0, 10), // Top 10 countries
+      cityBreakdown: sortBreakdown(cityBreakdown).slice(0, 10), // Top 10 cities
+      websiteStats: websiteStats.sort((a, b) => b.totalSubscribers - a.totalSubscribers)
+    }
+  });
+});
+
 // ===== LEGACY ENDPOINT (for backward compatibility) =====
 
 app.post('/api/notifications/send', async (req, res) => {
@@ -839,4 +1000,3 @@ app.listen(PORT, () => {
   console.log(`📊 Stats: ${users.size} users, ${websites.size} websites, ${subscriptions.size} subscribers`);
   console.log(`📤 Campaigns: ${campaigns.size}, Segments: ${segments.size}`);
 });
-

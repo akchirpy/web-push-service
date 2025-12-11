@@ -490,7 +490,7 @@ function filterSubscribersBySegment(subscribers, rules) {
 
 app.post('/api/campaigns/create', async (req, res) => {
   const masterApiKey = req.headers['x-api-key'];
-  const { websiteId, name, title, body, icon, url, segmentId, schedule } = req.body;
+  const { websiteId, name, title, body, icon, image, url, actions, segmentId, schedule } = req.body;
 
   if (!masterApiKey) {
     return res.status(401).json({ error: 'Master API key required' });
@@ -514,7 +514,9 @@ app.post('/api/campaigns/create', async (req, res) => {
     title,
     body,
     icon: icon || '',
+    image: image || '',
     url: url || '/',
+    actions: actions || [],
     segmentId: segmentId || null,
     schedule: schedule || null,
     status: schedule ? 'scheduled' : 'draft',
@@ -570,7 +572,9 @@ app.post('/api/campaigns/:campaignId/send', async (req, res) => {
     title: campaign.title,
     body: campaign.body,
     icon: campaign.icon,
+    image: campaign.image || undefined,
     url: campaign.url,
+    actions: campaign.actions || undefined,
     campaignId: campaign.campaignId
   });
 
@@ -929,7 +933,7 @@ app.get('/api/analytics/subscribers', (req, res) => {
 
 app.post('/api/notifications/send', async (req, res) => {
   const websiteApiKey = req.headers['x-api-key'];
-  const { title, body, icon, url, subscriptionIds } = req.body;
+  const { title, body, icon, image, url, actions, subscriptionIds } = req.body;
 
   if (!websiteApiKey) {
     return res.status(401).json({ error: 'Website API key required' });
@@ -954,7 +958,9 @@ app.post('/api/notifications/send', async (req, res) => {
     title,
     body,
     icon: icon || '',
+    image: image || '',
     url: url || '/',
+    actions: actions || [],
     segmentId: null,
     schedule: null,
     status: 'sent',
@@ -969,7 +975,9 @@ app.post('/api/notifications/send', async (req, res) => {
     title,
     body,
     icon: icon || '/icon.png',
+    image: image || undefined,
     url: url || '/',
+    actions: actions || undefined,
     campaignId
   });
 
@@ -1040,4 +1048,3 @@ app.listen(PORT, () => {
   console.log(`📊 Stats: ${users.size} users, ${websites.size} websites, ${subscriptions.size} subscribers`);
   console.log(`📤 Campaigns: ${campaigns.size}, Segments: ${segments.size}`);
 });
-

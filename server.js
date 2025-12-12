@@ -294,7 +294,7 @@ app.delete('/api/websites/:websiteId', (req, res) => {
 
 // ===== SUBSCRIPTION MANAGEMENT =====
 
-app.post('/api/subscribe', (req, res) => {
+app.post('/api/subscribe', async (req, res) => {
   const websiteApiKey = req.headers['x-api-key'];
   const { subscription, metadata = {} } = req.body;
 
@@ -308,6 +308,38 @@ app.post('/api/subscribe', (req, res) => {
     return res.status(401).json({ error: 'Invalid website API key' });
   }
 
+  // Get IP address for geolocation
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
+             req.headers['x-real-ip'] || 
+             req.connection.remoteAddress || 
+             req.socket.remoteAddress ||
+             'unknown';
+  
+  // Try to get location from IP
+  let country = metadata.country || 'Unknown';
+  let city = metadata.city || 'Unknown';
+  
+  // Skip geolocation for localhost/private IPs
+  const isLocalhost = ip === 'unknown' || ip === '::1' || ip === '127.0.0.1' || ip.startsWith('192.168') || ip.startsWith('10.');
+  
+  if (!isLocalhost && ip !== 'unknown') {
+    try {
+      // Using ipapi.co free tier (1000 requests/day)
+      const geoResponse = await fetch(`https://ipapi.co/${ip}/json/`, {
+        timeout: 2000 // 2 second timeout
+      });
+      
+      if (geoResponse.ok) {
+        const geoData = await geoResponse.json();
+        country = geoData.country_name || country;
+        city = geoData.city || city;
+      }
+    } catch (error) {
+      console.log('Geolocation lookup failed, using defaults:', error.message);
+      // Continue with Unknown values
+    }
+  }
+
   const subscriptionId = uuidv4();
   const subData = {
     id: subscriptionId,
@@ -315,10 +347,12 @@ app.post('/api/subscribe', (req, res) => {
     subscription,
     metadata: {
       userAgent: metadata.userAgent || '',
-      platform: metadata.platform || 'unknown',
-      browser: metadata.browser || 'unknown',
-      country: metadata.country || 'unknown',
-      city: metadata.city || 'unknown',
+      platform: metadata.platform || 'Unknown',
+      browser: metadata.browser || 'Unknown',
+      country: country,
+      city: city,
+      timezone: metadata.timezone || '',
+      language: metadata.language || '',
       subscribedAt: new Date()
     },
     createdAt: new Date()

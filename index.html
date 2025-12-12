@@ -1238,7 +1238,7 @@
                                 
                                 <div class="notification-preview">
                                     <div class="notification-header">
-                                        <img id="previewIcon" src="/icon.png" alt="Icon" class="notification-icon-img">
+                                        <img id="previewIcon" src="https://via.placeholder.com/64x64/FF6B35/FFFFFF?text=📱" alt="Icon" class="notification-icon-img">
                                         <div class="notification-meta">
                                             <div class="notification-site">YourSite.com</div>
                                             <div class="notification-time">now</div>
@@ -2021,7 +2021,7 @@ pushSDK.init();
         function updatePreview() {
             const title = document.getElementById('campaignTitle')?.value || 'Notification Title';
             const body = document.getElementById('campaignBody')?.value || 'Your notification message will appear here...';
-            const icon = document.getElementById('campaignIcon')?.value || '/icon.png';
+            const icon = document.getElementById('campaignIcon')?.value || 'https://via.placeholder.com/64x64/FF6B35/FFFFFF?text=📱';
             const image = document.getElementById('campaignImage')?.value;
             const url = document.getElementById('campaignUrl')?.value || 'example.com';
             const btn1 = document.getElementById('ctaButton1Text')?.value;
@@ -2580,18 +2580,6 @@ pushSDK.init();
             document.getElementById('campaignWebsiteFilter').value = '';
             document.getElementById('campaignSortFilter').value = 'date-desc';
             filterCampaigns();
-        }
-            })
-            .catch(error => {
-                console.error('Error loading campaigns:', error);
-                campaignsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📤</div>
-                        <h3>No campaigns yet</h3>
-                        <p>Create your first campaign above</p>
-                    </div>
-                `;
-            });
         }
 
         function logout() {

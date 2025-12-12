@@ -1,1 +1,2143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChirpyWeb - Push Notifications Dashboard</title>
+    <link rel="icon" href="https://chirpyweb.com/wp-content/uploads/2022/09/cropped-chirpy-web-favicon-32x32.png">
+    <style>
+        :root {
+            --chirpy-primary: #FF6B35;
+            --chirpy-secondary: #F7931E;
+            --chirpy-dark: #2D3748;
+            --chirpy-success: #10b981;
+            --chirpy-danger: #ef4444;
+            --chirpy-warning: #f59e0b;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header with ChirpyWeb Branding */
+        .header {
+            background: linear-gradient(135deg, var(--chirpy-primary) 0%, var(--chirpy-secondary) 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            height: 40px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .user-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-tabs-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 16px 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--chirpy-primary);
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        .nav-tab.active {
+            color: var(--chirpy-primary);
+            border-bottom-color: var(--chirpy-primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+            border-left: 4px solid var(--chirpy-primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-change {
+            font-size: 13px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-change.positive {
+            color: var(--chirpy-success);
+        }
+
+        .stat-change.negative {
+            color: var(--chirpy-danger);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Forms */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--chirpy-primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--chirpy-primary), var(--chirpy-secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--text-secondary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--chirpy-danger);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--chirpy-success);
+            color: white;
+        }
+
+        /* Campaign List */
+        .campaign-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .campaign-item {
+            background: var(--bg-main);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .campaign-item:hover {
+            border-color: var(--chirpy-primary);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.1);
+        }
+
+        .campaign-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .campaign-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .campaign-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .campaign-stat {
+            text-align: center;
+        }
+
+        .campaign-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--chirpy-primary);
+        }
+
+        .campaign-stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* Segmentation */
+        .segment-builder {
+            background: var(--bg-main);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .segment-rule {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .segment-rule select {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-sent {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-scheduled {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-draft {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        /* Charts */
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs-container {
+                overflow-x: auto;
+            }
+        }
+
+        /* Subscribers Tab Enhancements */
+        .filter-select {
+            padding: 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            background: white;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-select:hover {
+            border-color: var(--chirpy-primary);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--chirpy-primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .subscriber-count-badge {
+            background: linear-gradient(135deg, var(--chirpy-primary), var(--chirpy-secondary));
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        .subscribers-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .subscribers-table thead th {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 13px;
+            border-bottom: 3px solid var(--chirpy-primary);
+            white-space: nowrap;
+        }
+
+        .subscribers-table tbody td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .subscribers-table tbody tr {
+            transition: all 0.2s;
+        }
+
+        .subscribers-table tbody tr:hover {
+            background: #fff8f6;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
+        }
+
+        .subscriber-date {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .subscriber-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .subscriber-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .subscriber-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .subscriber-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .subscriber-location-city {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .subscriber-location-country {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .test-btn {
+            background: linear-gradient(135deg, var(--chirpy-primary), var(--chirpy-secondary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        }
+
+        .test-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Analytics Tab Styles */
+        .date-range {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .date-range input[type="date"] {
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .date-range input[type="date"]:focus {
+            outline: none;
+            border-color: var(--chirpy-primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .breakdown-item {
+            padding: 0.75rem;
+            background: var(--bg-main);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .breakdown-item:hover {
+            background: #fff8f6;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
+        }
+
+        .breakdown-bar {
+            height: 8px;
+            background: linear-gradient(90deg, var(--chirpy-primary), var(--chirpy-secondary));
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .breakdown-item:hover .breakdown-bar {
+            height: 10px;
+        }
+
+        /* CTA Buttons Styling */
+        .cta-buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .cta-button-group {
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .cta-button-group:hover {
+            border-color: var(--chirpy-primary);
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
+        }
+
+        small {
+            display: block;
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Section -->
+    <div id="authSection">
+        <div class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="https://chirpyweb.com/wp-content/uploads/2022/09/Chirpy-Web-Logo-Full.svg" alt="ChirpyWeb" class="logo">
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🚀 Get Started with ChirpyWeb</h2>
+                </div>
+                
+                <div id="authAlert"></div>
+                
+                <form onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="email">📧 Email Address</label>
+                        <input type="email" id="email" required placeholder="your@email.com">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        Create Account
+                    </button>
+                </form>
+
+                <div id="apiKeyDisplay" class="hidden" style="margin-top: 24px;">
+                    <div class="alert alert-success">
+                        <span style="font-size: 24px;">✓</span>
+                        <div>
+                            <strong>Welcome to ChirpyWeb!</strong><br>
+                            Save your Master API Key:
+                            <div style="background: white; padding: 12px; border-radius: 8px; margin-top: 8px; font-family: monospace; word-break: break-all;" id="masterApiKey"></div>
+                        </div>
+                    </div>
+                    <button onclick="loginWithKey()" class="btn btn-success">
+                        Continue to Dashboard →
+                    </button>
+                </div>
+
+                <div style="margin-top: 40px; padding-top: 32px; border-top: 2px solid var(--border);">
+                    <h3 style="margin-bottom: 16px;">Already have an account?</h3>
+                    <div class="form-group">
+                        <label for="loginApiKey">🔑 Master API Key</label>
+                        <input type="text" id="loginApiKey" placeholder="Paste your API key">
+                    </div>
+                    <button onclick="loginWithKey()" class="btn btn-primary">Sign In</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="hidden">
+        <div class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="https://chirpyweb.com/wp-content/uploads/2022/09/Chirpy-Web-Logo-Full.svg" alt="ChirpyWeb" class="logo">
+                </div>
+                <div class="header-actions">
+                    <div class="user-badge" id="userEmail"></div>
+                    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-tabs-container">
+                <button class="nav-tab active" onclick="switchTab('overview')">📊 Overview</button>
+                <button class="nav-tab" onclick="switchTab('websites')">🌐 Websites</button>
+                <button class="nav-tab" onclick="switchTab('subscribers')">👥 Subscribers</button>
+                <button class="nav-tab" onclick="switchTab('campaigns')">📤 Campaigns</button>
+                <button class="nav-tab" onclick="switchTab('segments')">🎯 Segments</button>
+                <button class="nav-tab" onclick="switchTab('analytics')">📈 Analytics</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Overview Tab -->
+            <div id="overviewTab" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Websites</span>
+                            <span class="stat-icon">🌐</span>
+                        </div>
+                        <div class="stat-value" id="websiteCount">0</div>
+                        <div class="stat-change">Total active</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Subscribers</span>
+                            <span class="stat-icon">👥</span>
+                        </div>
+                        <div class="stat-value" id="totalSubscribers">0</div>
+                        <div class="stat-change" id="subscriberGrowth">All time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Campaigns Sent</span>
+                            <span class="stat-icon">📤</span>
+                        </div>
+                        <div class="stat-value" id="campaignsSent">0</div>
+                        <div class="stat-change">All time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Click Rate</span>
+                            <span class="stat-icon">🎯</span>
+                        </div>
+                        <div class="stat-value" id="clickRate">0%</div>
+                        <div class="stat-change" id="clickRateDetail">0 of 0 clicked</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📈 Performance Overview</h2>
+                    </div>
+                    <div class="chart-container">
+                        <div class="empty-state">
+                            <div class="empty-icon">📊</div>
+                            <h3>Performance Charts</h3>
+                            <p>Analytics will appear here once you send campaigns</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Websites Tab -->
+            <div id="websitesTab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🌐 My Websites</h2>
+                    </div>
+                    
+                    <div id="websiteAlert"></div>
+
+                    <form onsubmit="addWebsite(event)" style="margin-bottom: 30px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="websiteDomain">Website Domain</label>
+                                <input type="text" id="websiteDomain" required placeholder="example.com">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">➕ Add Website</button>
+                    </form>
+
+                    <div id="websitesList"></div>
+                </div>
+
+                <!-- Selected Website Section -->
+                <div id="selectedWebsiteSection" class="hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">🔧 Integration Code</h2>
+                            <span class="badge badge-sent" id="selectedDomain"></span>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <span>🔑</span>
+                            <div>
+                                <strong>API Key:</strong>
+                                <div style="background: var(--chirpy-dark); color: white; padding: 12px; border-radius: 8px; margin-top: 8px; font-family: monospace; overflow-x: auto;" id="selectedApiKey"></div>
+                            </div>
+                        </div>
+
+                        <h3 style="margin: 24px 0 12px;">SDK Integration:</h3>
+                        <div style="background: var(--chirpy-dark); color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto;">
+                            <code id="initCode"></code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscribers Tab -->
+            <div id="subscribersTab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">👥 All Subscribers</h2>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <select id="subscriberWebsiteFilter" onchange="loadSubscribers()" class="filter-select">
+                                <option value="">All Websites</option>
+                            </select>
+                            <div class="subscriber-count-badge" id="subscriberCount"></div>
+                        </div>
+                    </div>
+
+                    <div id="subscriberAlert"></div>
+                    
+                    <div class="table-container">
+                        <table id="subscribersTable" class="subscribers-table">
+                            <thead>
+                                <tr>
+                                    <th>📅 Subscribed</th>
+                                    <th>🌐 Website</th>
+                                    <th>💻 Platform</th>
+                                    <th>🔍 Browser</th>
+                                    <th>📍 Location</th>
+                                    <th style="text-align: center;">⚡ Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subscribersTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px;">
+                                        <div class="loading"></div>
+                                        <p style="margin-top: 12px;">Loading subscribers...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campaigns Tab -->
+            <div id="campaignsTab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📤 Create Campaign</h2>
+                        <button class="btn btn-secondary" onclick="toggleCampaignForm()">+ New Campaign</button>
+                    </div>
+
+                    <div id="campaignForm" class="hidden">
+                        <div id="campaignAlert"></div>
+                        <form onsubmit="createCampaign(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="campaignName">Campaign Name</label>
+                                    <input type="text" id="campaignName" required placeholder="Summer Sale 2024">
+                                </div>
+                                <div class="form-group">
+                                    <label for="campaignWebsite">Select Website</label>
+                                    <select id="campaignWebsite" required>
+                                        <option value="">Choose website...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="campaignTitle">Notification Title</label>
+                                <input type="text" id="campaignTitle" required placeholder="🎉 Summer Sale is Live!">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="campaignBody">Notification Message</label>
+                                <textarea id="campaignBody" required placeholder="Get 50% off on all products..."></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="campaignIcon">Icon URL (Small)</label>
+                                    <input type="url" id="campaignIcon" placeholder="https://example.com/icon.png">
+                                    <small style="color: var(--text-secondary);">64x64px recommended</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="campaignImage">📸 Large Image URL (Optional)</label>
+                                    <input type="url" id="campaignImage" placeholder="https://example.com/banner.jpg">
+                                    <small style="color: var(--text-secondary);">360x180px or 2:1 ratio recommended</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="campaignUrl">Default Click URL</label>
+                                <input type="url" id="campaignUrl" placeholder="https://example.com/sale">
+                                <small style="color: var(--text-secondary);">URL when notification body is clicked</small>
+                            </div>
+
+                            <!-- CTA Buttons Section -->
+                            <div class="card" style="background: var(--bg-main); padding: 20px; margin: 20px 0;">
+                                <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                    🎯 Call-to-Action Buttons (Optional)
+                                    <span style="font-size: 12px; font-weight: normal; color: var(--text-secondary);">
+                                        Add up to 2 action buttons
+                                    </span>
+                                </h3>
+                                
+                                <div class="cta-buttons-container">
+                                    <!-- CTA Button 1 -->
+                                    <div class="cta-button-group">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="ctaButton1Text">Button 1 Text</label>
+                                                <input type="text" id="ctaButton1Text" placeholder="Shop Now" maxlength="30">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="ctaButton1Url">Button 1 URL</label>
+                                                <input type="url" id="ctaButton1Url" placeholder="https://example.com/shop">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- CTA Button 2 -->
+                                    <div class="cta-button-group">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="ctaButton2Text">Button 2 Text</label>
+                                                <input type="text" id="ctaButton2Text" placeholder="View Details" maxlength="30">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="ctaButton2Url">Button 2 URL</label>
+                                                <input type="url" id="ctaButton2Url" placeholder="https://example.com/details">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info" style="margin-top: 12px;">
+                                    <span>💡</span>
+                                    <div style="font-size: 13px;">
+                                        <strong>Pro Tip:</strong> CTA buttons make notifications more engaging! 
+                                        Use action words like "Shop Now", "Learn More", "Get Started", "View Offer"
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="campaignSegment">Segment (Optional)</label>
+                                    <select id="campaignSegment">
+                                        <option value="">All Subscribers</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="campaignSchedule">Schedule</label>
+                                    <select id="campaignSchedule">
+                                        <option value="now">Send Now</option>
+                                        <option value="schedule">Schedule for Later</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="testSubscriber">🧪 Test Notification (Optional)</label>
+                                <select id="testSubscriber">
+                                    <option value="">Select a test subscriber...</option>
+                                </select>
+                                <button type="button" class="btn btn-secondary btn-small" onclick="sendTestNotification()" style="margin-top: 8px;">
+                                    📤 Send Test to Selected Subscriber
+                                </button>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                                <button type="submit" class="btn btn-success" style="font-size: 16px; padding: 14px 32px;">
+                                    🚀 Send Campaign to All
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📊 Campaign History</h2>
+                    </div>
+                    <div id="campaignsList" class="campaign-list"></div>
+                </div>
+            </div>
+
+            <!-- Segments Tab -->
+            <div id="segmentsTab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🎯 Audience Segments</h2>
+                        <button class="btn btn-primary" onclick="toggleSegmentForm()">+ Create Segment</button>
+                    </div>
+
+                    <div id="segmentForm" class="hidden">
+                        <div class="segment-builder">
+                            <h3 style="margin-bottom: 16px;">Build Your Segment</h3>
+                            
+                            <div class="segment-rule">
+                                <select>
+                                    <option>Platform</option>
+                                    <option>Browser</option>
+                                    <option>Location</option>
+                                    <option>Subscription Date</option>
+                                </select>
+                                <select>
+                                    <option>is</option>
+                                    <option>is not</option>
+                                    <option>contains</option>
+                                </select>
+                                <input type="text" placeholder="Value" style="flex: 1;">
+                                <button class="btn btn-danger" style="padding: 8px 16px;">Remove</button>
+                            </div>
+
+                            <button class="btn btn-secondary" style="margin-top: 12px;">+ Add Rule</button>
+                            
+                            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--border);">
+                                <div class="form-group">
+                                    <label>Segment Name</label>
+                                    <input type="text" placeholder="e.g., Chrome Users in USA">
+                                </div>
+                                <button class="btn btn-success">💾 Save Segment</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="segmentsList"></div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analyticsTab" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Total Sent</span>
+                            <span class="stat-icon">📤</span>
+                        </div>
+                        <div class="stat-value" id="totalSent">0</div>
+                        <div class="stat-change">All time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Delivered</span>
+                            <span class="stat-icon">✓</span>
+                        </div>
+                        <div class="stat-value" id="totalDelivered">0</div>
+                        <div class="stat-change positive"><span id="deliveryRate">100</span>% delivery rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Clicks</span>
+                            <span class="stat-icon">👆</span>
+                        </div>
+                        <div class="stat-value" id="totalClicked">0</div>
+                        <div class="stat-change"><span id="ctrRate">0</span>% CTR</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">New This Week</span>
+                            <span class="stat-icon">👥</span>
+                        </div>
+                        <div class="stat-value" id="weekSubscribers">0</div>
+                        <div class="stat-change positive">Subscribers</div>
+                    </div>
+                </div>
+
+                <!-- Subscriber Growth Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📈 Subscriber Growth</h2>
+                    </div>
+                    <div class="date-range">
+                        <div>
+                            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Start Date</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div>
+                            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">End Date</label>
+                            <input type="date" id="endDate">
+                        </div>
+                        <button class="btn btn-primary" onclick="loadGrowthData()">Update Chart</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Subscriber Analytics -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">👥 Subscriber Demographics</h2>
+                    </div>
+                    <div class="breakdown-grid">
+                        <div>
+                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Platform</h3>
+                            <div id="platformBreakdown">
+                                <div class="empty-state">
+                                    <p>No subscriber data yet</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Browser</h3>
+                            <div id="browserBreakdown">
+                                <div class="empty-state">
+                                    <p>No subscriber data yet</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Top Countries</h3>
+                            <div id="countryBreakdown">
+                                <div class="empty-state">
+                                    <p>No subscriber data yet</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">By Website</h3>
+                            <div id="websiteBreakdown">
+                                <div class="empty-state">
+                                    <p>No websites yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://web-production-0538b.up.railway.app';
+        let currentUser = null;
+        let currentWebsite = null;
+        let websites = [];
+        let campaigns = [];
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Load data for tab
+            if (tabName === 'campaigns') {
+                loadCampaigns();
+            } else if (tabName === 'analytics') {
+                loadAnalytics();
+            } else if (tabName === 'subscribers') {
+                loadSubscribers();
+            }
+        }
+
+        // Load Analytics
+        function loadAnalytics() {
+            const masterApiKey = localStorage.getItem('masterApiKey');
+            
+            // Load campaign analytics
+            fetch(`${API_URL}/api/analytics/overview`, {
+                headers: { 'X-API-Key': masterApiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const stats = data.analytics;
+                    document.getElementById('totalSent').textContent = stats.totalSent;
+                    document.getElementById('totalDelivered').textContent = stats.totalDelivered;
+                    document.getElementById('totalClicked').textContent = stats.totalClicked;
+                    document.getElementById('deliveryRate').textContent = stats.deliveryRate;
+                    document.getElementById('ctrRate').textContent = stats.avgCTR;
+                }
+            })
+            .catch(error => {
+                console.error('Analytics error:', error);
+            });
+
+            // Set default date range (last 30 days for better visibility)
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 29); // Last 30 days
+            
+            document.getElementById('startDate').valueAsDate = startDate;
+            document.getElementById('endDate').valueAsDate = endDate;
+
+            // Load subscriber growth and analytics
+            loadGrowthData();
+            loadSubscriberAnalytics();
+        }
+
+        // Load growth chart data
+        let growthChart = null;
+        function loadGrowthData() {
+            const masterApiKey = localStorage.getItem('masterApiKey');
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            fetch(`${API_URL}/api/analytics/subscriber-growth?startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'X-API-Key': masterApiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('weekSubscribers').textContent = data.totalInRange;
+                    renderGrowthChart(data.growth);
+                }
+            })
+            .catch(err => console.error('Growth data error:', err));
+        }
+
+        function renderGrowthChart(growthData) {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            
+            if (growthChart) {
+                growthChart.destroy();
+            }
+
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: growthData.map(d => d.displayDate),
+                    datasets: [{
+                        label: 'New Subscribers',
+                        data: growthData.map(d => d.subscribers),
+                        borderColor: '#FF6B35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#FF6B35',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    return `${growthData[index].day}, ${growthData[index].displayDate}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                stepSize: 1,
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadSubscriberAnalytics() {
+            const masterApiKey = localStorage.getItem('masterApiKey');
+            
+            fetch(`${API_URL}/api/analytics/subscribers`, {
+                headers: { 'X-API-Key': masterApiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    renderBreakdown('platformBreakdown', data.subscribers.platformBreakdown);
+                    renderBreakdown('browserBreakdown', data.subscribers.browserBreakdown);
+                    renderBreakdown('countryBreakdown', data.subscribers.countryBreakdown);
+                    renderWebsiteStats(data.subscribers.websiteStats);
+                }
+            })
+            .catch(err => console.error('Subscriber analytics error:', err));
+        }
+
+        function renderBreakdown(elementId, data) {
+            const container = document.getElementById(elementId);
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No data available</p></div>';
+                return;
+            }
+
+            const maxCount = Math.max(...data.map(d => d.count));
+            container.innerHTML = data.map(item => `
+                <div class="breakdown-item">
+                    <div>
+                        <strong>${item.name}</strong>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            ${item.count} subscribers (${item.percentage}%)
+                        </div>
+                        <div class="breakdown-bar" style="width: ${(item.count / maxCount) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderWebsiteStats(websites) {
+            const container = document.getElementById('websiteBreakdown');
+            if (!websites || websites.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No websites yet</p></div>';
+                return;
+            }
+
+            const maxCount = Math.max(...websites.map(w => w.totalSubscribers));
+            container.innerHTML = websites.map(website => `
+                <div class="breakdown-item">
+                    <div>
+                        <strong>${website.domain}</strong>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            ${website.totalSubscribers} subscribers 
+                            ${website.recentGrowth > 0 ? `(+${website.recentGrowth} this week)` : ''}
+                        </div>
+                        <div class="breakdown-bar" style="width: ${(website.totalSubscribers / maxCount) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Check if logged in
+        window.addEventListener('load', () => {
+            const savedApiKey = localStorage.getItem('masterApiKey');
+            if (savedApiKey) {
+                document.getElementById('loginApiKey').value = savedApiKey;
+                loginWithKey();
+            }
+        });
+
+        async function handleSignup(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Creating...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/users/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('masterApiKey').textContent = data.masterApiKey;
+                    document.getElementById('apiKeyDisplay').classList.remove('hidden');
+                    localStorage.setItem('masterApiKey', data.masterApiKey);
+                    localStorage.setItem('userEmail', data.email);
+                    showAlert('authAlert', 'success', '✓ Account created!');
+                } else {
+                    showAlert('authAlert', 'error', data.error);
+                }
+            } catch (error) {
+                showAlert('authAlert', 'error', error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        }
+
+        async function loginWithKey() {
+            const apiKey = document.getElementById('loginApiKey').value || localStorage.getItem('masterApiKey');
+            if (!apiKey) {
+                showAlert('authAlert', 'error', 'Please enter your API key');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/users/info`, {
+                    headers: { 'X-API-Key': apiKey }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    localStorage.setItem('masterApiKey', apiKey);
+                    localStorage.setItem('userEmail', data.email);
+                    currentUser = data;
+                    showDashboard();
+                } else {
+                    showAlert('authAlert', 'error', data.error);
+                }
+            } catch (error) {
+                showAlert('authAlert', 'error', error.message);
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
+            loadDashboard();
+        }
+
+        async function loadDashboard() {
+            const apiKey = localStorage.getItem('masterApiKey');
+            try {
+                const response = await fetch(`${API_URL}/api/users/info`, {
+                    headers: { 'X-API-Key': apiKey }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('websiteCount').textContent = data.websiteCount || 0;
+                    document.getElementById('totalSubscribers').textContent = data.totalSubscribers || 0;
+                    
+                    // Update subscriber growth text
+                    const growth = document.getElementById('subscriberGrowth');
+                    if (data.totalSubscribers > 0) {
+                        growth.textContent = 'All time total';
+                    }
+                    
+                    loadWebsites();
+                    updateOverviewStats();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function updateOverviewStats() {
+            const apiKey = localStorage.getItem('masterApiKey');
+            try {
+                // Get all campaigns to calculate click rate
+                const response = await fetch(`${API_URL}/api/campaigns/all/list`, {
+                    headers: { 'X-API-Key': apiKey }
+                });
+                const data = await response.json();
+                
+                if (data.success && data.campaigns) {
+                    const campaigns = data.campaigns;
+                    
+                    // Calculate totals
+                    let totalSent = 0;
+                    let totalDelivered = 0;
+                    let totalClicks = 0;
+                    
+                    campaigns.forEach(campaign => {
+                        totalSent += campaign.stats?.sent || 0;
+                        totalDelivered += campaign.stats?.delivered || 0;
+                        totalClicks += campaign.stats?.clicked || 0;
+                    });
+                    
+                    // Update campaigns sent
+                    document.getElementById('campaignsSent').textContent = campaigns.length;
+                    
+                    // Calculate and update click rate
+                    const clickRate = totalDelivered > 0 ? ((totalClicks / totalDelivered) * 100).toFixed(1) : 0;
+                    document.getElementById('clickRate').textContent = `${clickRate}%`;
+                    
+                    // Update click rate detail
+                    const clickRateDetail = document.getElementById('clickRateDetail');
+                    if (totalDelivered > 0) {
+                        clickRateDetail.textContent = `${totalClicks} of ${totalDelivered} clicked`;
+                    } else {
+                        clickRateDetail.textContent = 'No campaigns sent yet';
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating overview stats:', error);
+            }
+        }
+
+        async function loadWebsites() {
+            const apiKey = localStorage.getItem('masterApiKey');
+            try {
+                const response = await fetch(`${API_URL}/api/websites`, {
+                    headers: { 'X-API-Key': apiKey }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    websites = data.websites;
+                    const websitesList = document.getElementById('websitesList');
+                    const campaignWebsiteSelect = document.getElementById('campaignWebsite');
+                    
+                    if (data.websites.length === 0) {
+                        websitesList.innerHTML = `<div class="empty-state"><div class="empty-icon">🌐</div><h3>No websites yet</h3><p>Add your first website above</p></div>`;
+                        return;
+                    }
+
+                    websitesList.innerHTML = data.websites.map(site => `
+                        <div class="campaign-item">
+                            <div class="campaign-header">
+                                <div>
+                                    <div class="campaign-title">🌐 ${site.domain}</div>
+                                    <div style="color: var(--text-secondary); margin-top: 4px;">
+                                        ${site.subscriberCount} subscribers
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-primary" onclick='selectWebsite(${JSON.stringify(site)})'>Manage</button>
+                                    <button class="btn btn-danger" onclick="deleteWebsite('${site.websiteId}')">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Populate campaign website select
+                    campaignWebsiteSelect.innerHTML = '<option value="">Choose website...</option>' + 
+                        data.websites.map(site => `<option value="${site.websiteId}">${site.domain}</option>`).join('');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function addWebsite(event) {
+            event.preventDefault();
+            const domain = document.getElementById('websiteDomain').value;
+            const apiKey = localStorage.getItem('masterApiKey');
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Adding...';
+
+            try {
+                const response = await fetch(`${API_URL}/api/websites/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': apiKey
+                    },
+                    body: JSON.stringify({ domain })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('websiteAlert', 'success', `✓ Website added!`);
+                    document.getElementById('websiteDomain').value = '';
+                    loadDashboard();
+                    loadWebsites();
+                } else {
+                    showAlert('websiteAlert', 'error', data.error);
+                }
+            } catch (error) {
+                showAlert('websiteAlert', 'error', error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+            }
+        }
+
+        async function deleteWebsite(websiteId) {
+            if (!confirm('Delete this website and all subscribers?')) return;
+            const apiKey = localStorage.getItem('masterApiKey');
+            try {
+                const response = await fetch(`${API_URL}/api/websites/${websiteId}`, {
+                    method: 'DELETE',
+                    headers: { 'X-API-Key': apiKey }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('websiteAlert', 'success', '✓ Deleted');
+                    loadDashboard();
+                    loadWebsites();
+                    document.getElementById('selectedWebsiteSection').classList.add('hidden');
+                } else {
+                    showAlert('websiteAlert', 'error', data.error);
+                }
+            } catch (error) {
+                showAlert('websiteAlert', 'error', error.message);
+            }
+        }
+
+        function selectWebsite(site) {
+            currentWebsite = site;
+            document.getElementById('selectedWebsiteSection').classList.remove('hidden');
+            document.getElementById('selectedDomain').textContent = site.domain;
+            document.getElementById('selectedApiKey').textContent = site.apiKey;
+
+            const initCode = `<script src="https://akchirpy.github.io/web-push-service/web-push-sdk.js"><\/script>
+<script>
+const pushSDK = new WebPushSDK({
+    apiKey: '${site.apiKey}',
+    serverUrl: '${API_URL}'
+});
+pushSDK.init();
+<\/script>`;
+            document.getElementById('initCode').textContent = initCode;
+            document.getElementById('selectedWebsiteSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleCampaignForm() {
+            document.getElementById('campaignForm').classList.toggle('hidden');
+        }
+
+        function toggleSegmentForm() {
+            document.getElementById('segmentForm').classList.toggle('hidden');
+        }
+
+        async function createCampaign(event) {
+            event.preventDefault();
+            
+            const websiteId = document.getElementById('campaignWebsite').value;
+            const campaignName = document.getElementById('campaignName').value;
+            
+            if (!websiteId) {
+                showAlert('campaignAlert', 'error', 'Please select a website');
+                return;
+            }
+
+            const website = websites.find(w => w.websiteId === websiteId);
+            if (!website) return;
+
+            const title = document.getElementById('campaignTitle').value;
+            const body = document.getElementById('campaignBody').value;
+            const icon = document.getElementById('campaignIcon').value;
+            const image = document.getElementById('campaignImage').value;
+            const url = document.getElementById('campaignUrl').value;
+            const segmentId = document.getElementById('campaignSegment').value || null;
+
+            // Get CTA button data
+            const ctaButton1Text = document.getElementById('ctaButton1Text').value.trim();
+            const ctaButton1Url = document.getElementById('ctaButton1Url').value.trim();
+            const ctaButton2Text = document.getElementById('ctaButton2Text').value.trim();
+            const ctaButton2Url = document.getElementById('ctaButton2Url').value.trim();
+
+            // Build actions array for CTA buttons
+            const actions = [];
+            if (ctaButton1Text && ctaButton1Url) {
+                actions.push({
+                    action: 'button1',
+                    title: ctaButton1Text,
+                    url: ctaButton1Url
+                });
+            }
+            if (ctaButton2Text && ctaButton2Url) {
+                actions.push({
+                    action: 'button2',
+                    title: ctaButton2Text,
+                    url: ctaButton2Url
+                });
+            }
+
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Creating...';
+
+            const masterApiKey = localStorage.getItem('masterApiKey');
+
+            try {
+                // Step 1: Create campaign
+                const createResponse = await fetch(`${API_URL}/api/campaigns/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': masterApiKey
+                    },
+                    body: JSON.stringify({
+                        websiteId,
+                        name: campaignName,
+                        title,
+                        body,
+                        icon,
+                        image,
+                        url,
+                        actions,
+                        segmentId
+                    })
+                });
+
+                const createData = await createResponse.json();
+                
+                if (!createData.success) {
+                    showAlert('campaignAlert', 'error', createData.error || 'Failed to create campaign');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHTML;
+                    return;
+                }
+
+                // Step 2: Send campaign
+                submitBtn.innerHTML = '<span class="loading"></span> Sending...';
+                
+                const sendResponse = await fetch(`${API_URL}/api/campaigns/${createData.campaign.campaignId}/send`, {
+                    method: 'POST',
+                    headers: {
+                        'X-API-Key': masterApiKey
+                    }
+                });
+
+                const sendData = await sendResponse.json();
+                
+                if (sendData.success) {
+                    showAlert('campaignAlert', 'success', `🎉 Campaign sent to ${sendData.sent} subscribers!`);
+                    event.target.reset();
+                    setTimeout(() => {
+                        toggleCampaignForm();
+                        loadCampaigns();
+                        loadDashboard();
+                    }, 1500);
+                } else {
+                    showAlert('campaignAlert', 'error', sendData.error || 'Failed to send campaign');
+                }
+            } catch (error) {
+                showAlert('campaignAlert', 'error', 'Error: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+            }
+        }
+
+        // ===== SUBSCRIBER MANAGEMENT =====
+        
+        async function loadSubscribers() {
+            const masterApiKey = localStorage.getItem('masterApiKey');
+            const websiteFilter = document.getElementById('subscriberWebsiteFilter').value;
+            
+            try {
+                // Get all websites first
+                const websitesRes = await fetch(`${API_URL}/api/websites`, {
+                    headers: { 'X-API-Key': masterApiKey }
+                });
+                const websitesData = await websitesRes.json();
+                
+                if (!websitesData.success) {
+                    throw new Error('Failed to load websites');
+                }
+
+                // Populate website filter
+                const filterSelect = document.getElementById('subscriberWebsiteFilter');
+                const testSelect = document.getElementById('testSubscriber');
+                filterSelect.innerHTML = '<option value="">All Websites</option>';
+                
+                websitesData.websites.forEach(site => {
+                    filterSelect.innerHTML += `<option value="${site.websiteId}">${site.domain}</option>`;
+                });
+
+                // Get all subscribers for all websites
+                let allSubscribers = [];
+                
+                for (const website of websitesData.websites) {
+                    // Skip if filter is set and doesn't match
+                    if (websiteFilter && website.websiteId !== websiteFilter) {
+                        continue;
+                    }
+
+                    const subsRes = await fetch(`${API_URL}/api/subscriptions`, {
+                        headers: { 'X-API-Key': website.apiKey }
+                    });
+                    const subsData = await subsRes.json();
+                    
+                    if (subsData.success && subsData.subscriptions) {
+                        subsData.subscriptions.forEach(sub => {
+                            allSubscribers.push({
+                                ...sub,
+                                website: website.domain,
+                                websiteApiKey: website.apiKey
+                            });
+                        });
+                    }
+                }
+
+                // Update count
+                document.getElementById('subscriberCount').textContent = 
+                    `${allSubscribers.length} subscriber${allSubscribers.length !== 1 ? 's' : ''}`;
+
+                // Populate test subscriber dropdown
+                testSelect.innerHTML = '<option value="">Select a test subscriber...</option>';
+                allSubscribers.forEach((sub, index) => {
+                    // Safe access with fallbacks
+                    const browser = sub.metadata?.browser || 'Unknown';
+                    const platform = sub.metadata?.platform || 'Unknown';
+                    const subDate = sub.subscribedAt || sub.metadata?.subscribedAt || new Date();
+                    const label = `${sub.website} - ${browser} on ${platform} (${new Date(subDate).toLocaleDateString()})`;
+                    testSelect.innerHTML += `<option value="${index}">${label}</option>`;
+                });
+
+                // Store subscribers globally for test notification
+                window.allSubscribers = allSubscribers;
+
+                // Render table
+                renderSubscribersTable(allSubscribers);
+                
+            } catch (error) {
+                console.error('Error loading subscribers:', error);
+                showAlert('subscriberAlert', 'error', 'Failed to load subscribers');
+            }
+        }
+
+        function renderSubscribersTable(subscribers) {
+            const tbody = document.getElementById('subscribersTableBody');
+            
+            if (subscribers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <div class="empty-icon">👥</div>
+                            <h3>No Subscribers Yet</h3>
+                            <p>Add the integration code to your website to get subscribers</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = subscribers.map((sub, index) => {
+                // Safe access with fallbacks
+                const subscribedAt = sub.subscribedAt || sub.metadata?.subscribedAt || new Date();
+                const platform = sub.metadata?.platform || 'Unknown';
+                const browser = sub.metadata?.browser || 'Unknown';
+                const city = sub.metadata?.city || 'Unknown';
+                const country = sub.metadata?.country || 'Unknown';
+                
+                return `
+                <tr>
+                    <td>
+                        <div class="subscriber-date">${new Date(subscribedAt).toLocaleDateString()}</div>
+                        <div class="subscriber-time">${new Date(subscribedAt).toLocaleTimeString()}</div>
+                    </td>
+                    <td>
+                        <span class="badge badge-info">${sub.website}</span>
+                    </td>
+                    <td>
+                        <div class="subscriber-info">
+                            <span class="subscriber-icon">${getPlatformIcon(platform)}</span>
+                            <span class="subscriber-label">${platform}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="subscriber-info">
+                            <span class="subscriber-icon">${getBrowserIcon(browser)}</span>
+                            <span class="subscriber-label">${browser}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="subscriber-location-city">${city}</div>
+                        <div class="subscriber-location-country">${country}</div>
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="test-btn" onclick="sendTestToSubscriber(${index})">
+                            📤 Send Test
+                        </button>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        function getPlatformIcon(platform) {
+            const icons = {
+                'Windows': '🖥️',
+                'macOS': '🍎',
+                'Mac OS': '🍎',
+                'Linux': '🐧',
+                'Android': '🤖',
+                'iOS': '📱',
+                'unknown': '❓'
+            };
+            return icons[platform] || icons['unknown'];
+        }
+
+        function getBrowserIcon(browser) {
+            const icons = {
+                'Chrome': '🌐',
+                'Firefox': '🦊',
+                'Safari': '🧭',
+                'Edge': '🌊',
+                'Opera': '🔴',
+                'unknown': '❓'
+            };
+            return icons[browser] || icons['unknown'];
+        }
+
+        async function sendTestNotification() {
+            const testSubscriberIndex = document.getElementById('testSubscriber').value;
+            
+            if (!testSubscriberIndex) {
+                showAlert('campaignAlert', 'error', 'Please select a test subscriber first');
+                return;
+            }
+
+            await sendTestToSubscriber(parseInt(testSubscriberIndex));
+        }
+
+        async function sendTestToSubscriber(index) {
+            if (!window.allSubscribers || !window.allSubscribers[index]) {
+                alert('Subscriber not found. Please refresh the page.');
+                return;
+            }
+
+            const subscriber = window.allSubscribers[index];
+            const title = document.getElementById('campaignTitle').value || 'Test Notification';
+            const body = document.getElementById('campaignBody').value || 'This is a test notification';
+            const icon = document.getElementById('campaignIcon').value || '';
+            const image = document.getElementById('campaignImage').value || '';
+            const url = document.getElementById('campaignUrl').value || '/';
+
+            if (!title || !body) {
+                alert('Please fill in the notification title and message first');
+                return;
+            }
+
+            // Get CTA button data
+            const ctaButton1Text = document.getElementById('ctaButton1Text').value.trim();
+            const ctaButton1Url = document.getElementById('ctaButton1Url').value.trim();
+            const ctaButton2Text = document.getElementById('ctaButton2Text').value.trim();
+            const ctaButton2Url = document.getElementById('ctaButton2Url').value.trim();
+
+            // Build actions array
+            const actions = [];
+            if (ctaButton1Text && ctaButton1Url) {
+                actions.push({
+                    action: 'button1',
+                    title: ctaButton1Text,
+                    url: ctaButton1Url
+                });
+            }
+            if (ctaButton2Text && ctaButton2Url) {
+                actions.push({
+                    action: 'button2',
+                    title: ctaButton2Text,
+                    url: ctaButton2Url
+                });
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/notifications/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': subscriber.websiteApiKey
+                    },
+                    body: JSON.stringify({
+                        title,
+                        body,
+                        icon,
+                        image,
+                        url,
+                        actions,
+                        subscriptionIds: [subscriber.id]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const browser = subscriber.metadata?.browser || 'Unknown browser';
+                    const platform = subscriber.metadata?.platform || 'Unknown platform';
+                    const ctaInfo = actions.length > 0 ? ` with ${actions.length} CTA button(s)` : '';
+                    showAlert('campaignAlert', 'success', 
+                        `✅ Test notification sent to ${browser} on ${platform}${ctaInfo}!`);
+                } else {
+                    showAlert('campaignAlert', 'error', 'Failed to send test notification');
+                }
+            } catch (error) {
+                console.error('Error sending test:', error);
+                showAlert('campaignAlert', 'error', 'Error sending test notification');
+            }
+        }
+
+        function loadCampaigns() {
+            const masterApiKey = localStorage.getItem('masterApiKey');
+            const campaignsList = document.getElementById('campaignsList');
+            
+            // Fetch all campaigns for the user
+            fetch(`${API_URL}/api/campaigns/all/list`, {
+                headers: { 'X-API-Key': masterApiKey }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.campaigns.length > 0) {
+                    campaignsList.innerHTML = data.campaigns.map(campaign => `
+                        <div class="campaign-item">
+                            <div class="campaign-header">
+                                <div>
+                                    <div class="campaign-title">${campaign.name}</div>
+                                    <div style="color: var(--text-secondary); margin-top: 4px; font-size: 14px;">
+                                        ${campaign.websiteDomain} • ${new Date(campaign.createdAt).toLocaleDateString()}
+                                    </div>
+                                </div>
+                                <span class="badge ${campaign.status === 'sent' ? 'badge-sent' : campaign.status === 'scheduled' ? 'badge-scheduled' : 'badge-draft'}">
+                                    ${campaign.status}
+                                </span>
+                            </div>
+                            <div style="margin-top: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                                <strong>${campaign.title}</strong>
+                                <p style="color: var(--text-secondary); margin-top: 4px;">${campaign.body}</p>
+                            </div>
+                            <div class="campaign-stats">
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value">${campaign.stats.sent}</div>
+                                    <div class="campaign-stat-label">Sent</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value">${campaign.stats.delivered}</div>
+                                    <div class="campaign-stat-label">Delivered</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value">${campaign.stats.clicked}</div>
+                                    <div class="campaign-stat-label">Clicked</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value" style="color: var(--chirpy-primary);">${campaign.ctr}%</div>
+                                    <div class="campaign-stat-label">CTR</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    campaignsList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📤</div>
+                            <h3>No campaigns yet</h3>
+                            <p>Create your first campaign above</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading campaigns:', error);
+                campaignsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📤</div>
+                        <h3>No campaigns yet</h3>
+                        <p>Create your first campaign above</p>
+                    </div>
+                `;
+            });
+        }
+
+        function logout() {
+            if (confirm('Logout?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function showAlert(elementId, type, message) {
+            const alertDiv = document.getElementById(elementId);
+            const alertClass = type === 'success' ? 'alert-success' : (type === 'error' ? 'alert-error' : 'alert-info');
+            const icon = type === 'success' ? '✓' : '✗';
+            alertDiv.innerHTML = `<div class="alert ${alertClass}"><span style="font-size: 20px;">${icon}</span><span>${message}</span></div>`;
+            setTimeout(() => alertDiv.innerHTML = '', 5000);
+        }
+    </script>
+</body>
+</html>
 

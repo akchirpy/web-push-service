@@ -721,6 +721,120 @@
             color: var(--text-secondary);
         }
 
+        /* Two-Column Campaign Form Layout */
+        .campaign-form-layout {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 32px;
+            margin-top: 24px;
+        }
+
+        .campaign-form-left {
+            min-width: 0; /* Prevent grid blowout */
+        }
+
+        .campaign-form-right {
+            position: relative;
+        }
+
+        .preview-sticky {
+            position: sticky;
+            top: 24px;
+        }
+
+        /* Character Counter */
+        .char-counter {
+            float: right;
+            font-size: 12px;
+            font-weight: normal;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .char-counter.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .char-counter.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Platform Tabs */
+        .preview-platform-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .preview-tab {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preview-tab:hover {
+            background: var(--bg-secondary);
+        }
+
+        .preview-tab.active {
+            background: var(--chirpy-primary);
+            color: white;
+            border-color: var(--chirpy-primary);
+        }
+
+        /* Preview Limits Info */
+        .preview-limits {
+            padding: 8px 12px;
+            background: #eff6ff;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: #1e40af;
+        }
+
+        /* Preview Warning */
+        .preview-warning {
+            margin-top: 12px;
+            padding: 12px;
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .preview-warning span:first-child {
+            font-size: 20px;
+        }
+
+        .preview-warning div {
+            flex: 1;
+            font-size: 13px;
+            color: #92400e;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 1200px) {
+            .campaign-form-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-sticky {
+                position: relative;
+                top: 0;
+            }
+        }
+
         /* Notification Preview Styles */
         .preview-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1112,159 +1226,205 @@
 
                     <div id="campaignForm" class="hidden">
                         <div id="campaignAlert"></div>
-                        <form onsubmit="createCampaign(event)">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="campaignName">Campaign Name</label>
-                                    <input type="text" id="campaignName" required placeholder="Summer Sale 2024">
-                                </div>
-                                <div class="form-group">
-                                    <label for="campaignWebsite">Select Website</label>
-                                    <select id="campaignWebsite" required>
-                                        <option value="">Choose website...</option>
-                                    </select>
-                                </div>
-                            </div>
+                        
+                        <!-- Two Column Layout: Form Left, Preview Right -->
+                        <div class="campaign-form-layout">
+                            <!-- LEFT COLUMN: Form -->
+                            <div class="campaign-form-left">
+                                <form onsubmit="createCampaign(event)">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="campaignName">Campaign Name</label>
+                                            <input type="text" id="campaignName" required placeholder="Summer Sale 2024">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="campaignWebsite">Select Website</label>
+                                            <select id="campaignWebsite" required>
+                                                <option value="">Choose website...</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="campaignTitle">Notification Title</label>
-                                <input type="text" id="campaignTitle" required placeholder="🎉 Summer Sale is Live!">
-                            </div>
+                                    <div class="form-group">
+                                        <label for="campaignTitle">
+                                            Notification Title
+                                            <span class="char-counter" id="titleCounter">0 / 70</span>
+                                        </label>
+                                        <input type="text" id="campaignTitle" required placeholder="🎉 Summer Sale is Live!" maxlength="70">
+                                        <small style="color: var(--text-secondary);">Max 70 chars for Windows, 43 for macOS, 40 for Android</small>
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="campaignBody">Notification Message</label>
-                                <textarea id="campaignBody" required placeholder="Get 50% off on all products..."></textarea>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="campaignBody">
+                                            Notification Message
+                                            <span class="char-counter" id="bodyCounter">0 / 140</span>
+                                        </label>
+                                        <textarea id="campaignBody" required placeholder="Get 50% off on all products..." maxlength="200" rows="4"></textarea>
+                                        <small style="color: var(--text-secondary);">Max 140 chars for Windows, 86 for macOS, 50 for Android (without image)</small>
+                                    </div>
 
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="campaignIcon">Icon URL (Small)</label>
-                                    <input type="url" id="campaignIcon" placeholder="https://example.com/icon.png">
-                                    <small style="color: var(--text-secondary);">64x64px recommended</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="campaignImage">📸 Large Image URL (Optional)</label>
-                                    <input type="url" id="campaignImage" placeholder="https://example.com/banner.jpg">
-                                    <small style="color: var(--text-secondary);">360x180px or 2:1 ratio recommended</small>
-                                </div>
-                            </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="campaignIcon">Icon URL (Small)</label>
+                                            <input type="url" id="campaignIcon" placeholder="https://example.com/icon.png">
+                                            <small style="color: var(--text-secondary);">64x64px recommended</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="campaignImage">📸 Large Image URL (Optional)</label>
+                                            <input type="url" id="campaignImage" placeholder="https://example.com/banner.jpg">
+                                            <small style="color: var(--text-secondary);">360x180px or 2:1 ratio recommended</small>
+                                        </div>
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="campaignUrl">Default Click URL</label>
-                                <input type="url" id="campaignUrl" placeholder="https://example.com/sale">
-                                <small style="color: var(--text-secondary);">URL when notification body is clicked</small>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="campaignUrl">Default Click URL</label>
+                                        <input type="url" id="campaignUrl" placeholder="https://example.com/sale">
+                                        <small style="color: var(--text-secondary);">URL when notification body is clicked</small>
+                                    </div>
 
-                            <!-- CTA Buttons Section -->
-                            <div class="card" style="background: var(--bg-main); padding: 20px; margin: 20px 0;">
-                                <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                                    🎯 Call-to-Action Buttons (Optional)
-                                    <span style="font-size: 12px; font-weight: normal; color: var(--text-secondary);">
-                                        Add up to 2 action buttons
-                                    </span>
-                                </h3>
-                                
-                                <div class="cta-buttons-container">
-                                    <!-- CTA Button 1 -->
-                                    <div class="cta-button-group">
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="ctaButton1Text">Button 1 Text</label>
-                                                <input type="text" id="ctaButton1Text" placeholder="Shop Now" maxlength="30">
+                                    <!-- CTA Buttons Section -->
+                                    <div class="card" style="background: var(--bg-main); padding: 20px; margin: 20px 0;">
+                                        <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                            🎯 Call-to-Action Buttons (Optional)
+                                            <span style="font-size: 12px; font-weight: normal; color: var(--text-secondary);">
+                                                Add up to 2 action buttons
+                                            </span>
+                                        </h3>
+                                        
+                                        <div class="cta-buttons-container">
+                                            <!-- CTA Button 1 -->
+                                            <div class="cta-button-group">
+                                                <div class="form-row">
+                                                    <div class="form-group">
+                                                        <label for="ctaButton1Text">Button 1 Text</label>
+                                                        <input type="text" id="ctaButton1Text" placeholder="Shop Now" maxlength="30">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="ctaButton1Url">Button 1 URL</label>
+                                                        <input type="url" id="ctaButton1Url" placeholder="https://example.com/shop">
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="ctaButton1Url">Button 1 URL</label>
-                                                <input type="url" id="ctaButton1Url" placeholder="https://example.com/shop">
+
+                                            <!-- CTA Button 2 -->
+                                            <div class="cta-button-group" style="margin-top: 12px;">
+                                                <div class="form-row">
+                                                    <div class="form-group">
+                                                        <label for="ctaButton2Text">Button 2 Text</label>
+                                                        <input type="text" id="ctaButton2Text" placeholder="Learn More" maxlength="30">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="ctaButton2Url">Button 2 URL</label>
+                                                        <input type="url" id="ctaButton2Url" placeholder="https://example.com/learn">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="alert alert-info" style="margin-top: 12px;">
+                                            <span>💡</span>
+                                            <div style="font-size: 13px;">
+                                                <strong>Pro Tip:</strong> CTA buttons make notifications more engaging! 
+                                                Use action words like "Shop Now", "Learn More", "Get Started", "View Offer"
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- CTA Button 2 -->
-                                    <div class="cta-button-group">
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="ctaButton2Text">Button 2 Text</label>
-                                                <input type="text" id="ctaButton2Text" placeholder="View Details" maxlength="30">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="campaignSegment">Segment (Optional)</label>
+                                            <select id="campaignSegment">
+                                                <option value="">All Subscribers</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="campaignSchedule">Schedule</label>
+                                            <select id="campaignSchedule">
+                                                <option value="now">Send Now</option>
+                                                <option value="schedule">Schedule for Later</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="testSubscriber">🧪 Test Notification (Optional)</label>
+                                        <select id="testSubscriber">
+                                            <option value="">Select a test subscriber...</option>
+                                        </select>
+                                        <button type="button" class="btn btn-secondary btn-small" onclick="sendTestNotification()" style="margin-top: 8px;">
+                                            📤 Send Test to Selected Subscriber
+                                        </button>
+                                    </div>
+
+                                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                                        <button type="submit" class="btn btn-success" style="font-size: 16px; padding: 14px 32px;">
+                                            🚀 Send Campaign to All
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- RIGHT COLUMN: Live Preview (Sticky) -->
+                            <div class="campaign-form-right">
+                                <div class="preview-sticky">
+                                    <h3 style="margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                                        📱 Live Preview
+                                        <span style="font-size: 12px; font-weight: normal; color: var(--text-secondary);">Updates as you type</span>
+                                    </h3>
+                                    
+                                    <!-- Platform Tabs -->
+                                    <div class="preview-platform-tabs">
+                                        <button class="preview-tab active" onclick="switchPreviewPlatform('windows')" id="tabWindows">
+                                            🖥️ Windows
+                                        </button>
+                                        <button class="preview-tab" onclick="switchPreviewPlatform('macos')" id="tabMacOS">
+                                            🍎 macOS
+                                        </button>
+                                        <button class="preview-tab" onclick="switchPreviewPlatform('android')" id="tabAndroid">
+                                            🤖 Android
+                                        </button>
+                                    </div>
+
+                                    <!-- Character Limit Info -->
+                                    <div class="preview-limits" id="previewLimits">
+                                        <small style="color: var(--text-secondary);">
+                                            <strong>Windows:</strong> Title: 70 chars, Body: 140 chars
+                                        </small>
+                                    </div>
+                                    
+                                    <div class="notification-preview">
+                                        <div class="notification-header">
+                                            <img id="previewIcon" src="https://via.placeholder.com/64x64/FF6B35/FFFFFF?text=📱" alt="Icon" class="notification-icon-img">
+                                            <div class="notification-meta">
+                                                <div class="notification-site">YourSite.com</div>
+                                                <div class="notification-time">now</div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="ctaButton2Url">Button 2 URL</label>
-                                                <input type="url" id="ctaButton2Url" placeholder="https://example.com/details">
-                                            </div>
+                                        </div>
+                                        <div class="notification-main">
+                                            <div class="notification-title" id="previewTitle">Notification Title</div>
+                                            <div class="notification-body" id="previewBody">Your notification message will appear here...</div>
+                                        </div>
+                                        <div class="notification-image-container" id="previewImageContainer" style="display: none;">
+                                            <img id="previewImage" src="" alt="" class="notification-large-image">
+                                        </div>
+                                        <div class="notification-actions" id="previewActions" style="display: none;">
+                                            <button class="preview-action-btn" id="previewButton1">Button 1</button>
+                                            <button class="preview-action-btn" id="previewButton2">Button 2</button>
+                                        </div>
+                                        <div class="notification-url" id="previewUrl">example.com</div>
+                                    </div>
+
+                                    <!-- Character Count Warning -->
+                                    <div class="preview-warning" id="previewWarning" style="display: none;">
+                                        <span>⚠️</span>
+                                        <div>
+                                            <strong>Text may be truncated!</strong><br>
+                                            <span id="warningText">Your title/body exceeds the limit for this platform.</span>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="alert alert-info" style="margin-top: 12px;">
-                                    <span>💡</span>
-                                    <div style="font-size: 13px;">
-                                        <strong>Pro Tip:</strong> CTA buttons make notifications more engaging! 
-                                        Use action words like "Shop Now", "Learn More", "Get Started", "View Offer"
-                                    </div>
-                                </div>
                             </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="campaignSegment">Segment (Optional)</label>
-                                    <select id="campaignSegment">
-                                        <option value="">All Subscribers</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="campaignSchedule">Schedule</label>
-                                    <select id="campaignSchedule">
-                                        <option value="now">Send Now</option>
-                                        <option value="schedule">Schedule for Later</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="testSubscriber">🧪 Test Notification (Optional)</label>
-                                <select id="testSubscriber">
-                                    <option value="">Select a test subscriber...</option>
-                                </select>
-                                <button type="button" class="btn btn-secondary btn-small" onclick="sendTestNotification()" style="margin-top: 8px;">
-                                    📤 Send Test to Selected Subscriber
-                                </button>
-                            </div>
-
-                            <!-- Notification Preview -->
-                            <div class="preview-section">
-                                <h3 style="margin-bottom: 16px; color: white; display: flex; align-items: center; gap: 8px;">
-                                    📱 Live Preview
-                                    <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Updates as you type</span>
-                                </h3>
-                                
-                                <div class="notification-preview">
-                                    <div class="notification-header">
-                                        <img id="previewIcon" src="https://via.placeholder.com/64x64/FF6B35/FFFFFF?text=📱" alt="Icon" class="notification-icon-img">
-                                        <div class="notification-meta">
-                                            <div class="notification-site">YourSite.com</div>
-                                            <div class="notification-time">now</div>
-                                        </div>
-                                    </div>
-                                    <div class="notification-main">
-                                        <div class="notification-title" id="previewTitle">Notification Title</div>
-                                        <div class="notification-body" id="previewBody">Your notification message will appear here...</div>
-                                    </div>
-                                    <div class="notification-image-container" id="previewImageContainer" style="display: none;">
-                                        <img id="previewImage" src="" alt="" class="notification-large-image">
-                                    </div>
-                                    <div class="notification-actions" id="previewActions" style="display: none;">
-                                        <button class="preview-action-btn" id="previewButton1">Button 1</button>
-                                        <button class="preview-action-btn" id="previewButton2">Button 2</button>
-                                    </div>
-                                    <div class="notification-url" id="previewUrl">example.com</div>
-                                </div>
-                            </div>
-
-                            <div style="display: flex; gap: 12px; margin-top: 20px;">
-                                <button type="submit" class="btn btn-success" style="font-size: 16px; padding: 14px 32px;">
-                                    🚀 Send Campaign to All
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
 
@@ -2072,6 +2232,112 @@ pushSDK.init();
             } else if (previewActions) {
                 previewActions.style.display = 'none';
             }
+
+            // Update character counters
+            updateCharacterCounters();
+        }
+
+        // Platform-specific character limits
+        const platformLimits = {
+            windows: { title: 70, body: 140 },
+            macos: { title: 43, body: 86 },
+            android: { title: 40, body: 50 }
+        };
+
+        let currentPlatform = 'windows';
+
+        // Update character counters
+        function updateCharacterCounters() {
+            const title = document.getElementById('campaignTitle')?.value || '';
+            const body = document.getElementById('campaignBody')?.value || '';
+            const titleCounter = document.getElementById('titleCounter');
+            const bodyCounter = document.getElementById('bodyCounter');
+            
+            if (titleCounter) {
+                const titleLimit = platformLimits[currentPlatform].title;
+                titleCounter.textContent = `${title.length} / ${titleLimit}`;
+                
+                // Color coding
+                titleCounter.classList.remove('warning', 'error');
+                if (title.length > titleLimit) {
+                    titleCounter.classList.add('error');
+                } else if (title.length > titleLimit * 0.8) {
+                    titleCounter.classList.add('warning');
+                }
+            }
+            
+            if (bodyCounter) {
+                const bodyLimit = platformLimits[currentPlatform].body;
+                bodyCounter.textContent = `${body.length} / ${bodyLimit}`;
+                
+                // Color coding
+                bodyCounter.classList.remove('warning', 'error');
+                if (body.length > bodyLimit) {
+                    bodyCounter.classList.add('error');
+                } else if (body.length > bodyLimit * 0.8) {
+                    bodyCounter.classList.add('warning');
+                }
+            }
+
+            // Show warning if text exceeds limit
+            checkCharacterLimits();
+        }
+
+        // Check character limits and show warning
+        function checkCharacterLimits() {
+            const title = document.getElementById('campaignTitle')?.value || '';
+            const body = document.getElementById('campaignBody')?.value || '';
+            const warning = document.getElementById('previewWarning');
+            const warningText = document.getElementById('warningText');
+            const limits = platformLimits[currentPlatform];
+            
+            const titleOver = title.length > limits.title;
+            const bodyOver = body.length > limits.body;
+            
+            if (warning && warningText) {
+                if (titleOver || bodyOver) {
+                    let message = '';
+                    if (titleOver && bodyOver) {
+                        message = `Title exceeds limit by ${title.length - limits.title} chars, Body exceeds limit by ${body.length - limits.body} chars`;
+                    } else if (titleOver) {
+                        message = `Title exceeds limit by ${title.length - limits.title} chars`;
+                    } else {
+                        message = `Body exceeds limit by ${body.length - limits.body} chars`;
+                    }
+                    warningText.textContent = message;
+                    warning.style.display = 'flex';
+                } else {
+                    warning.style.display = 'none';
+                }
+            }
+        }
+
+        // Switch preview platform
+        function switchPreviewPlatform(platform) {
+            currentPlatform = platform;
+            
+            // Update active tab
+            document.querySelectorAll('.preview-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(`tab${platform.charAt(0).toUpperCase() + platform.slice(1)}`).classList.add('active');
+            
+            // Update limits display
+            const limitsEl = document.getElementById('previewLimits');
+            if (limitsEl) {
+                const limits = platformLimits[platform];
+                const platformNames = {
+                    windows: 'Windows',
+                    macos: 'macOS',
+                    android: 'Android'
+                };
+                limitsEl.innerHTML = `<small style="color: var(--text-secondary);">
+                    <strong>${platformNames[platform]}:</strong> Title: ${limits.title} chars, Body: ${limits.body} chars
+                </small>`;
+            }
+            
+            // Update character counters
+            updateCharacterCounters();
         }
 
         function toggleSegmentForm() {
@@ -2599,3 +2865,4 @@ pushSDK.init();
     </script>
 </body>
 </html>
+
